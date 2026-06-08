@@ -1,568 +1,287 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fashion Fuel Dealz - India's Trusted Reseller</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-<style>
-  body { font-family: 'Poppins', sans-serif; }
-  .font-playfair { font-family: 'Playfair Display', serif; }
-  .glass { background: rgba(0,0,0,0.7); backdrop-filter: blur(10px); }
-  .shimmer { background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
-  @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-  .hide-scrollbar::-webkit-scrollbar { display: none; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fashion Fuel - Trendy Fashion Store</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body{font-family:Poppins,sans-serif}
+     .product-card{transition:transform 0.2s}
+     .product-card:hover{transform:translateY(-5px)}
+     .size-btn.selected{background:#2563eb;color:white;border-color:#2563eb}
+     .modal{display:none}
+     .modal.active{display:flex}
+    </style>
 </head>
-<body class="bg-white text-black">
-
-<!-- Header -->
-<header class="glass sticky top-0 z-50 text-white">
-  <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-    <div>
-      <h1 class="text-xl font-bold">Fashion Fuel Dealz</h1>
-      <p class="text-xs text-orange-400">India's Trusted Reseller</p>
-    </div>
-    <div class="flex items-center gap-4">
-      <button id="searchBtn" class="text-lg"><i class="fa-solid fa-magnifying-glass"></i></button>
-      <button id="wishlistBtn" class="text-lg relative">
-        <i class="fa-regular fa-heart"></i>
-        <span id="wishlistCount" class="absolute -top-2 -right-2 bg-orange-500 text-xs rounded-full w-5 h-5 flex items-center justify-center hidden">0</span>
-      </button>
-      <button id="cartBtn" class="text-lg relative">
-        <i class="fa-solid fa-bag-shopping"></i>
-        <span id="cartCount" class="absolute -top-2 -right-2 bg-orange-500 text-xs rounded-full w-5 h-5 flex items-center justify-center hidden">0</span>
-      </button>
-      <button id="accountBtn" class="text-lg"><i class="fa-regular fa-user"></i></button>
-    </div>
-  </div>
-  <div id="searchBar" class="hidden px-4 pb-3">
-    <input id="searchInput" type="text" placeholder="Search for kurtis, sneakers..." class="w-full px-4 py-2 rounded-lg text-black">
-  </div>
-</header>
-
-<!-- Main Content -->
-<main id="mainContent">
-  <!-- Hero -->
-  <section class="bg-gradient-to-r from-black to-gray-900 text-white px-4 py-8 text-center">
-    <h2 class="font-playfair text-3xl font-bold mb-2">Direct Factory Price</h2>
-    <p class="text-orange-400 mb-4">Women, Kids, Sneakers | Up to 70% OFF</p>
-    <div id="countdown" class="flex justify-center gap-4 mb-6">
-      <div><span id="hrs" class="text-2xl font-bold">48</span><p class="text-xs">Hours</p></div>
-      <div><span id="mins" class="text-2xl font-bold">00</span><p class="text-xs">Mins</p></div>
-      <div><span id="secs" class="text-2xl font-bold">00</span><p class="text-xs">Secs</p></div>
-    </div>
-    <button onclick="scrollToProducts()" class="bg-orange-500 px-8 py-3 rounded-full font-semibold">SHOP NOW</button>
-  </section>
-
-  <!-- Category Strip -->
-  <section class="px-4 py-6 overflow-x-auto hide-scrollbar">
-    <div class="flex gap-3 w-max">
-      <button onclick="filterCategory('All')" class="category-btn bg-orange-500 text-white px-6 py-2 rounded-full text-sm">All</button>
-      <button onclick="filterCategory('Women')" class="category-btn bg-gray-100 px-6 py-2 rounded-full text-sm">Women</button>
-      <button onclick="filterCategory('Kids')" class="category-btn bg-gray-100 px-6 py-2 rounded-full text-sm">Kids</button>
-      <button onclick="filterCategory('Sneakers')" class="category-btn bg-gray-100 px-6 py-2 rounded-full text-sm">Sneakers</button>
-      <button onclick="filterCategory('Accessories')" class="category-btn bg-gray-100 px-6 py-2 rounded-full text-sm">Accessories</button>
-    </div>
-  </section>
-
-  <!-- Trust Strip -->
-  <section class="bg-orange-50 px-4 py-4">
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center text-xs">
-      <div><i class="fa-solid fa-money-bill text-orange-500 mb-1"></i><p>COD + UPI Available</p></div>
-      <div><i class="fa-solid fa-arrow-rotate-left text-orange-500 mb-1"></i><p>7 Day Easy Return</p></div>
-      <div><i class="fa-solid fa-truck text-orange-500 mb-1"></i><p>Pan India Delivery</p></div>
-      <div><i class="fa-solid fa-users text-orange-500 mb-1"></i><p>50K+ Happy Customers</p></div>
-    </div>
-  </section>
-
-  <!-- About Founder -->
-  <section class="px-4 py-8">
-    <div class="bg-orange-50 rounded-3xl p-6 text-center">
-      <i class="fa-solid fa-heart text-3xl text-orange-500 mb-3"></i>
-      <h3 class="font-playfair text-2xl font-bold mb-3">Why Fashion Fuel Dealz?</h3>
-      <p class="text-sm text-gray-700 mb-4">Ranchi se hun. Yaha fashion me variety nahi, rate zyada. Isliye 2024 me direct manufacturers se tie-up karke Fashion Fuel Dealz start kiya. Women, Kids, Sneakers - sab factory rate me. Return/Exchange me full support. Quality check karke hi dispatch hota hai.</p>
-      <p class="font-semibold mb-4">100% Support Promise -Yashu Kumar</p>
-      <div class="flex gap-3 justify-center">
-        <a href="https://instagram.com/FASHIONFUEL.DEALZ" target="_blank" class="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-full text-sm">
-          <i class="fa-brands fa-instagram mr-1"></i> Follow @FASHIONFUEL.DEALZ
-        </a>
-        <a href="https://wa.me/919113358739" target="_blank" class="bg-green-500 text-white px-4 py-2 rounded-full text-sm">
-          <i class="fa-brands fa-whatsapp mr-1"></i> WhatsApp Support
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <!-- Product Grid -->
-  <section id="products" class="px-4 py-6">
-    <h3 class="font-playfair text-2xl font-bold mb-4">Trending Now</h3>
-    <div id="productGrid" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
-  </section>
-
-  <!-- Footer -->
-  <footer class="bg-black text-white px-4 py-8 mt-8">
-    <div class="max-w-7xl mx-auto">
-      <h4 class="font-bold text-lg mb-3">Fashion Fuel Dealz</h4>
-      <p class="text-sm text-gray-400 mb-4">Marketing Office: Ranchi, Jharkhand</p>
-      <p class="text-sm text-gray-400 mb-4">Products shipped directly from supplier warehouses</p>
-      <p class="text-sm text-gray-400 mb-4">7 Day Return Policy | COD + UPI Available</p>
-      <div class="flex gap-4 mb-4">
-        <a href="https://wa.me/919113358739" class="text-sm"><i class="fa-brands fa-whatsapp mr-1"></i> WhatsApp Support</a>
-        <a href="https://instagram.com/FashionFuel.dealz" class="text-sm"><i class="fa-brands fa-instagram mr-1"></i> @FASHIONFUEL.DEALZ</a>
-      </div>
-      <p class="text-xs text-gray-500">© 2026 Fashion Fuel Dealz. All rights reserved.</p>
-    </div>
-  </footer>
-</main>
-
-<!-- Bottom Nav Mobile -->
-<nav class="fixed bottom-0 left-0 right-0 bg-white border-t md:hidden z-40">
-  <div class="grid grid-cols-4 text-center text-xs py-2">
-    <button onclick="showHome()" class="text-orange-500"><i class="fa-solid fa-house text-lg"></i><p>Home</p></button>
-    <button onclick="showCategories()" class="text-gray-500"><i class="fa-solid fa-grip text-lg"></i><p>Categories</p></button>
-    <button onclick="openCart()" class="text-gray-500 relative"><i class="fa-solid fa-bag-shopping text-lg"></i><p>Cart</p><span id="cartCountMobile" class="absolute top-0 right-6 bg-orange-500 text-white rounded-full w-4 h-4 text-xs hidden">0</span></button>
-    <button onclick="openAccount()" class="text-gray-500"><i class="fa-regular fa-user text-lg"></i><p>Account</p></button>
-  </div>
-</nav>
-
-<!-- Modals: Login, Product, Cart, Checkout, Account, Return -->
-<div id="modalContainer"></div>
-
-<script type="module">
-  import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js';
-  import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js';
-  import { getDatabase, ref, onValue, push, set, get, update, remove } from 'https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js';
-
-const FIREBASE_CONFIG = {
-    apiKey: "AIzaSyDnN6Vqh6yNdWM6NVg_JFbMTrj37jheK9I",
-    authDomain: "fashionfuel-7e841.firebaseapp.com",
-    databaseURL: "https://fashionfuel-7e841-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "fashionfuel-7e841",
-    storageBucket: "fashionfuel-7e841.firebasestorage.app",
-    messagingSenderId: "457153779306",
-    appId: "1:457153779306:web:7f8c6f6129da5f9e8bdc13",
-    measurementId: "G-WL5KVK1KJX"
-};
-  const OWNER_NAME = "Yashu Kumar";
-  const UPI_ID = "9113358739@fam";
-  const WHATSAPP = "919113358739";
-
-  const app = initializeApp(FIREBASE_CONFIG);
-  const auth = getAuth(app);
-  const db = getDatabase(app);
-  const provider = new GoogleAuthProvider();
-
-  let currentUser = null;
-  let allProducts = [];
-  let currentFilter = 'All';
-  let cart = [];
-  let wishlist = [];
-
-  // Auth State
-  onAuthStateChanged(auth, (user) => {
-    currentUser = user;
-    if (user) {
-      loadUserData();
-      document.getElementById('accountBtn').innerHTML = '<i class="fa-solid fa-user-check"></i>';
-    } else {
-      document.getElementById('accountBtn').innerHTML = '<i class="fa-regular fa-user"></i>';
-      cart = []; wishlist = []; updateCounts();
-    }
-  });
-
-  // Load Products
-  onValue(ref(db, 'products'), (snapshot) => {
-    allProducts = [];
-    snapshot.forEach((child) => {
-      allProducts.push({ id: child.key, ...child.val() });
-    });
-    renderProducts();
-  });
-
-  function renderProducts() {
-    const grid = document.getElementById('productGrid');
-    const filtered = currentFilter === 'All' ? allProducts : allProducts.filter(p => p.category === currentFilter);
-    grid.innerHTML = filtered.map(p => `
-      <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-        <div class="relative">
-          <img src="${p.imageUrl}" alt="${p.name}" class="w-full h-48 object-cover" loading="lazy">
-          <span class="absolute top-2 left-2 bg-orange-500 text-white text-xs px-2 py-1 rounded">${p.category}</span>
-          <button onclick="toggleWishlist('${p.id}')" class="absolute top-2 right-2 bg-white rounded-full w-8 h-8 flex items-center justify-center">
-            <i class="fa-${wishlist.includes(p.id) ? 'solid text-red-500' : 'regular'} fa-heart"></i>
-          </button>
-        </div>
-        <div class="p-3">
-          <div class="flex items-center gap-1 text-xs mb-1">
-            <span class="bg-green-100 text-green-700 px-1 rounded">4.6★</span>
-            <span class="text-gray-500">${p.rating || '4.6'}</span>
-          </div>
-          <h4 class="font-medium text-sm mb-1 line-clamp-1">${p.name}</h4>
-          <div class="flex items-baseline gap-2 mb-2">
-            <span class="font-bold">₹${p.price}</span>
-            <span class="text-xs text-gray-400 line-through">₹${p.mrp}</span>
-          </div>
-          <span class="bg-yellow-100 text-yellow-700 text-xs px-2 py-1 rounded">Limited Stock</span>
-          <button onclick="openProduct('${p.id}')" class="w-full bg-black text-white text-sm py-2 rounded-lg mt-2">ADD TO CART</button>
-        </div>
-      </div>
-    `).join('');
-    gsap.from("#productGrid > div", { opacity: 0, y: 20, stagger: 0.05 });
-  }
-
-  window.filterCategory = (cat) => {
-    currentFilter = cat;
-    document.querySelectorAll('.category-btn').forEach(btn => {
-      btn.classList.remove('bg-orange-500', 'text-white');
-      btn.classList.add('bg-gray-100');
-    });
-    event.target.classList.add('bg-orange-500', 'text-white');
-    event.target.classList.remove('bg-gray-100');
-    renderProducts();
-  }
-
-  window.scrollToProducts = () => document.getElementById('products').scrollIntoView({ behavior: 'smooth' });
-
-  // Countdown
-  setInterval(() => {
-    const end = new Date().getTime() + 48 * 60 * 60 * 1000;
-    const now = new Date().getTime();
-    const diff = end - now;
-    document.getElementById('hrs').textContent = String(Math.floor(diff / (1000 * 60 * 60))).padStart(2, '0');
-    document.getElementById('mins').textContent = String(Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
-    document.getElementById('secs').textContent = String(Math.floor((diff % (1000 * 60)) / 1000)).padStart(2, '0');
-  }, 1000);
-
-  // Auth Functions
-  window.showLogin = () => {
-    if (currentUser) { openAccount(); return; }
-    showModal(`
-      <div class="bg-white rounded-2xl p-6 max-w-sm w-full">
-        <h3 class="font-bold text-xl mb-4">Login to Continue</h3>
-        <button onclick="googleLogin()" class="w-full border py-3 rounded-lg mb-3"><i class="fa-brands fa-google mr-2"></i>Continue with Google</button>
-        <div class="text-center text-sm text-gray-500 mb-3">or</div>
-        <input id="email" type="email" placeholder="Email" class="w-full border px-4 py-2 rounded-lg mb-3">
-        <input id="password" type="password" placeholder="Password" class="w-full border px-4 py-2 rounded-lg mb-3">
-        <button onclick="emailLogin()" class="w-full bg-black text-white py-3 rounded-lg mb-2">Login</button>
-        <button onclick="emailSignup()" class="w-full text-sm text-orange-500">Create New Account</button>
-      </div>
-    `);
-  }
-
-  window.googleLogin = async () => {
-    try { await signInWithPopup(auth, provider); closeModal(); } catch(e) { alert(e.message); }
-  }
-
-  window.emailLogin = async () => {
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    try { await signInWithEmailAndPassword(auth, email, password); closeModal(); } catch(e) { alert(e.message); }
-  }
-
-  window.emailSignup = async () => {
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    try { await createUserWithEmailAndPassword(auth, email, password); closeModal(); } catch(e) { alert(e.message); }
-  }
-
-  window.openAccount = () => {
-    if (!currentUser) { showLogin(); return; }
-    showModal(`
-      <div class="bg-white rounded-2xl p-6 max-w-md w-full max-h- overflow-y-auto">
-        <div class="flex justify-between items-center mb-4">
-          <h3 class="font-bold text-xl">My Account</h3>
-          <button onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-        <div class="flex gap-2 mb-4">
-          <button onclick="showAccountTab('orders')" class="account-tab bg-black text-white px-4 py-2 rounded-lg text-sm">My Orders</button>
-          <button onclick="showAccountTab('wishlist')" class="account-tab bg-gray-100 px-4 py-2 rounded-lg text-sm">Wishlist</button>
-        </div>
-        <div id="accountContent"></div>
-        <button onclick="logout()" class="w-full border border-red-500 text-red-500 py-2 rounded-lg mt-4">Logout</button>
-      </div>
-    `);
-    showAccountTab('orders');
-  }
-
-  window.showAccountTab = async (tab) => {
-    document.querySelectorAll('.account-tab').forEach(b => { b.classList.remove('bg-black', 'text-white'); b.classList.add('bg-gray-100'); });
-    event.target.classList.add('bg-black', 'text-white');
-    const content = document.getElementById('accountContent');
-    if (tab === 'orders') {
-      const ordersSnap = await get(ref(db, 'orders'));
-      let orders = [];
-      ordersSnap.forEach(o => { if (o.val().uid === currentUser.uid) orders.push({ id: o.key, ...o.val() }); });
-      content.innerHTML = orders.length ? orders.map(o => `
-        <div class="border rounded-lg p-3 mb-3">
-          <div class="flex justify-between text-sm mb-2">
-            <span class="font-semibold">#${o.orderId}</span>
-            <span class="text-xs px-2 py-1 rounded ${o.status === 'Delivered' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'}">${o.status}</span>
-          </div>
-          <p class="text-sm mb-1">₹${o.total} • ${o.paymentMethod}</p>
-          <p class="text-xs text-gray-500 mb-2">${new Date(o.timestamp).toLocaleDateString()}</p>
-          ${o.status === 'Delivered' && (Date.now() - o.timestamp < 7*24*60*60*1000) && o.returnStatus === 'None' ? 
-            `<button onclick="showReturnModal('${o.id}')" class="text-orange-500 text-sm">Return Order</button>` : 
-            o.returnStatus !== 'None' ? `<span class="text-xs text-gray-500">Return: ${o.returnStatus}</span>` : ''}
-        </div>
-      `).join('') : '<p class="text-center text-gray-500 py-8">No orders yet</p>';
-    } else {
-      const wishItems = allProducts.filter(p => wishlist.includes(p.id));
-      content.innerHTML = wishItems.length ? wishItems.map(p => `
-        <div class="flex gap-3 border-b py-3">
-          <img src="${p.imageUrl}" class="w-16 h-16 object-cover rounded">
-          <div class="flex-1">
-            <h4 class="text-sm font-medium">${p.name}</h4>
-            <p class="text-sm font-bold">₹${p.price}</p>
-          </div>
-          <button onclick="toggleWishlist('${p.id}'); showAccountTab('wishlist')"><i class="fa-solid fa-trash text-red-500"></i></button>
-        </div>
-      `).join('') : '<p class="text-center text-gray-500 py-8">Wishlist empty</p>';
-    }
-  }
-
-  window.logout = async () => { await signOut(auth); closeModal(); }
-
-  // Cart & Wishlist
-  async function loadUserData() {
-    const userSnap = await get(ref(db, `users/${currentUser.uid}`));
-    if (userSnap.exists()) {
-      const data = userSnap.val();
-      cart = data.cart || [];
-      wishlist = data.wishlist || [];
-      updateCounts();
-    }
-  }
-
-  function updateCounts() {
-    const cartCount = cart.reduce((s, i) => s + i.qty, 0);
-    document.getElementById('cartCount').textContent = cartCount;
-    document.getElementById('cartCountMobile').textContent = cartCount;
-    document.getElementById('wishlistCount').textContent = wishlist.length;
-    document.getElementById('cartCount').classList.toggle('hidden', cartCount === 0);
-    document.getElementById('cartCountMobile').classList.toggle('hidden', cartCount === 0);
-    document.getElementById('wishlistCount').classList.toggle('hidden', wishlist.length === 0);
-  }
-
-  window.toggleWishlist = async (productId) => {
-    if (!currentUser) { showLogin(); return; }
-    const idx = wishlist.indexOf(productId);
-    if (idx > -1) wishlist.splice(idx, 1); else wishlist.push(productId);
-    await update(ref(db, `users/${currentUser.uid}`), { wishlist });
-    updateCounts();
-    renderProducts();
-  }
-
-  window.openProduct = (id) => {
-    if (!currentUser) { showLogin(); return; }
-    const p = allProducts.find(x => x.id === id);
-    showModal(`
-      <div class="bg-white rounded-2xl max-w-lg w-full max-h- overflow-y-auto">
-        <div class="relative">
-          <img src="${p.imageUrl}" class="w-full h-80 object-cover">
-          <button onclick="closeModal()" class="absolute top-4 right-4 bg-white rounded-full w-8 h-8"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-        <div class="p-6">
-          <span class="bg-orange-100 text-orange-700 text-xs px-2 py-1 rounded">${p.category}</span>
-          <h3 class="font-bold text-xl mt-2 mb-2">${p.name}</h3>
-          <div class="flex items-baseline gap-2 mb-4">
-            <span class="text-2xl font-bold">₹${p.price}</span>
-            <span class="text-gray-400 line-through">₹${p.mrp}</span>
-            <span class="text-green-600 text-sm">${Math.round((1-p.price/p.mrp)*100)}% OFF</span>
-          </div>
-          <p class="text-sm text-gray-600 mb-4">Usually Delivered in 5-7 days</p>
-          <div class="mb-4">
-            <p class="text-sm font-semibold mb-2">Select Size</p>
-            <div class="flex gap-2" id="sizeSelector">
-              ${p.sizes.map(s => `<button onclick="selectSize('${s}')" class="size-btn border px-4 py-2 rounded-lg">${s}</button>`).join('')}
+<body class="bg-gray-50">
+    <header class="bg-white shadow-md sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <img src="https://i.ibb.co/Z6KWsXtc/IMG-20260608-121833.jpg" alt="Fashion Fuel" class="h-10 md:h-12">
+            <div class="flex items-center gap-4">
+                <button onclick="openCart()" class="relative">
+                    🛒
+                    <span id="cart-count" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">0</span>
+                </button>
+                <a href="#contact" class="text-sm hover:text-blue-600">Contact</a>
             </div>
-          </div>
-          <div class="flex gap-3">
-            <button onclick="addToCart('${p.id}')" class="flex-1 bg-black text-white py-3 rounded-lg font-semibold">ADD TO CART</button>
-            <button onclick="buyNow('${p.id}')" class="flex-1 bg-orange-500 text-white py-3 rounded-lg font-semibold">BUY NOW</button>
-          </div>
         </div>
-      </div>
-    `);
-  }
+    </header>
 
-  let selectedSize = '';
-  window.selectSize = (size) => {
-    selectedSize = size;
-    document.querySelectorAll('.size-btn').forEach(b => { b.classList.remove('bg-black', 'text-white'); });
-    event.target.classList.add('bg-black', 'text-white');
-  }
-
-  window.addToCart = async (productId) => {
-    if (!selectedSize) { alert('Please select size'); return; }
-    const existing = cart.find(i => i.productId === productId && i.size === selectedSize);
-    if (existing) existing.qty++; else cart.push({ productId, size: selectedSize, qty: 1 });
-    await update(ref(db, `users/${currentUser.uid}`), { cart });
-    updateCounts();
-    closeModal();
-    alert('Added to cart!');
-  }
-
-  window.buyNow = async (productId) => {
-    await addToCart(productId);
-    openCart();
-  }
-
-  window.openCart = () => {
-    if (!currentUser) { showLogin(); return; }
-    const cartItems = cart.map(item => {
-      const p = allProducts.find(x => x.id === item.productId);
-      return { ...p, ...item, subtotal: p.price * item.qty };
-    });
-    const total = cartItems.reduce((s, i) => s + i.subtotal, 0);
-    showModal(`
-      <div class="bg-white rounded-2xl max-w-lg w-full max-h- overflow-y-auto">
-        <div class="p-6 border-b flex justify-between items-center">
-          <h3 class="font-bold text-xl">My Cart (${cartItems.length})</h3>
-          <button onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+    <main class="max-w-7xl mx-auto px-4 py-8">
+        <div class="mb-6 flex gap-2 overflow-x-auto pb-2">
+            <button onclick="filterCategory('All')" class="cat-btn px-4 py-2 bg-blue-600 text-white rounded-lg whitespace-nowrap">All</button>
+            <button onclick="filterCategory('Shirts')" class="cat-btn px-4 py-2 bg-gray-200 rounded-lg whitespace-nowrap">Shirts</button>
+            <button onclick="filterCategory('T-Shirts')" class="cat-btn px-4 py-2 bg-gray-200 rounded-lg whitespace-nowrap">T-Shirts</button>
+            <button onclick="filterCategory('Jeans')" class="cat-btn px-4 py-2 bg-gray-200 rounded-lg whitespace-nowrap">Jeans</button>
+            <button onclick="filterCategory('Shoes')" class="cat-btn px-4 py-2 bg-gray-200 rounded-lg whitespace-nowrap">Shoes</button>
+            <button onclick="filterCategory('Watches')" class="cat-btn px-4 py-2 bg-gray-200 rounded-lg whitespace-nowrap">Watches</button>
+            <button onclick="filterCategory('Accessories')" class="cat-btn px-4 py-2 bg-gray-200 rounded-lg whitespace-nowrap">Accessories</button>
         </div>
-        <div class="p-6">
-          ${cartItems.length ? cartItems.map(i => `
-            <div class="flex gap-3 mb-4 pb-4 border-b">
-              <img src="${i.imageUrl}" class="w-20 h-20 object-cover rounded">
-              <div class="flex-1">
-                <h4 class="text-sm font-medium">${i.name}</h4>
-                <p class="text-xs text-gray-500">Size: ${i.size}</p>
-                <p class="font-bold">₹${i.price} x ${i.qty}</p>
-              </div>
-              <button onclick="removeFromCart('${i.productId}','${i.size}')"><i class="fa-solid fa-trash text-red-500"></i></button>
+
+        <div id="product-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
+    </main>
+
+    <section id="contact" class="bg-white py-12 mt-12">
+        <div class="max-w-2xl mx-auto px-4">
+            <h2 class="text-2xl font-bold text-center mb-6">Contact Us</h2>
+            <form id="contact-form" class="space-y-4">
+                <input type="text" id="c-name" placeholder="Your Name" class="w-full p-3 border rounded-lg" required>
+                <input type="email" id="c-email" placeholder="Your Email" class="w-full p-3 border rounded-lg" required>
+                <textarea id="c-message" placeholder="Your Message" class="w-full p-3 border rounded-lg" rows="4" required></textarea>
+                <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold">Send Message</button>
+            </form>
+            <div class="text-center mt-6">
+                <a href="https://wa.me/919113358739" target="_blank" class="inline-block bg-green-500 text-white px-6 py-3 rounded-lg font-semibold">💬 Chat on WhatsApp</a>
             </div>
-          `).join('') : '<p class="text-center text-gray-500 py-8">Cart is empty</p>'}
-          ${cartItems.length ? `
-            <div class="bg-orange-50 p-4 rounded-lg mb-4">
-              <p class="text-sm">You saved ₹${cartItems.reduce((s,i) => s + (i.mrp - i.price) * i.qty, 0)}</p>
+        </div>
+    </section>
+
+    <!-- Product Modal -->
+    <div id="product-modal" class="modal fixed inset-0 bg-black bg-opacity-50 z-50 items-center justify-center p-4">
+        <div class="bg-white rounded-xl max-w-2xl w-full max-h-screen overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-start mb-4">
+                    <h3 id="modal-name" class="text-2xl font-bold"></h3>
+                    <button onclick="closeModal()" class="text-2xl">×</button>
+                </div>
+                <img id="modal-img" class="w-full h-64 object-cover rounded-lg mb-4">
+                <p id="modal-desc" class="text-gray-600 mb-4"></p>
+                <p class="text-2xl font-bold mb-4">₹<span id="modal-price"></span></p>
+                <div class="mb-4">
+                    <p class="font-semibold mb-2">Select Size:</p>
+                    <div id="modal-sizes" class="flex gap-2 flex-wrap"></div>
+                </div>
+                <button onclick="addToCartFromModal()" class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold">Add to Cart</button>
             </div>
-            <div class="flex justify-between font-bold text-lg mb-4">
-              <span>Total</span><span>₹${total}</span>
+        </div>
+    </div>
+
+    <!-- Cart Modal -->
+    <div id="cart-modal" class="modal fixed inset-0 bg-black bg-opacity-50 z-50 items-center justify-center p-4">
+        <div class="bg-white rounded-xl max-w-2xl w-full max-h-screen overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-2xl font-bold">Your Cart</h3>
+                    <button onclick="closeCart()" class="text-2xl">×</button>
+                </div>
+                <div id="cart-items" class="space-y-3 mb-4"></div>
+                <div class="border-t pt-4">
+                    <div class="flex justify-between text-xl font-bold mb-4">
+                        <span>Total:</span><span>₹<span id="cart-total">0</span></span>
+                    </div>
+                    <button onclick="openCheckout()" class="w-full bg-green-600 text-white py-3 rounded-lg font-semibold">Proceed to Checkout</button>
+                </div>
             </div>
-            <button onclick="checkout()" class="w-full bg-black text-white py-3 rounded-lg font-semibold">CHECKOUT</button>
-          ` : ''}
         </div>
-      </div>
-    `);
-  }
+    </div>
 
-  window.removeFromCart = async (productId, size) => {
-    cart = cart.filter(i => !(i.productId === productId && i.size === size));
-    await update(ref(db, `users/${currentUser.uid}`), { cart });
-    updateCounts();
-    openCart();
-  }
-
-  window.checkout = () => {
-    showModal(`
-      <div class="bg-white rounded-2xl max-w-lg w-full max-h- overflow-y-auto">
-        <div class="p-6 border-b flex justify-between items-center">
-          <h3 class="font-bold text-xl">Checkout</h3>
-          <button onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+    <!-- Checkout Modal -->
+    <div id="checkout-modal" class="modal fixed inset-0 bg-black bg-opacity-50 z-50 items-center justify-center p-4">
+        <div class="bg-white rounded-xl max-w-2xl w-full max-h-screen overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-2xl font-bold">Checkout</h3>
+                    <button onclick="closeCheckout()" class="text-2xl">×</button>
+                </div>
+                <form id="checkout-form" class="space-y-4">
+                    <input type="text" id="co-name" placeholder="Full Name" class="w-full p-3 border rounded-lg" required>
+                    <input type="tel" id="co-phone" placeholder="Phone Number" class="w-full p-3 border rounded-lg" required>
+                    <textarea id="co-address" placeholder="Full Address" class="w-full p-3 border rounded-lg" rows="2" required></textarea>
+                    <div class="grid grid-cols-2 gap-4">
+                        <input type="text" id="co-city" placeholder="City" class="p-3 border rounded-lg" required>
+                        <input type="text" id="co-pincode" placeholder="Pincode" class="p-3 border rounded-lg" required>
+                    </div>
+                    <div class="border rounded-lg p-4">
+                        <p class="font-semibold mb-3">Payment Method:</p>
+                        <label class="flex items-center gap-2 mb-2"><input type="radio" name="payment" value="COD" checked onchange="toggleUPI()"> <span>Cash on Delivery</span></label>
+                        <label class="flex items-center gap-2"><input type="radio" name="payment" value="UPI" onchange="toggleUPI()"> <span>UPI Payment</span></label>
+                        <div id="upi-section" class="hidden mt-4 text-center">
+                            <p class="text-sm mb-2">Scan QR or Pay to UPI ID:</p>
+                            <p class="font-bold text-lg mb-2">9113358739@fam</p>
+                            <div id="qrcode" class="flex justify-center mb-2"></div>
+                            <p class="text-xs text-gray-600">Amount: ₹<span id="upi-amount"></span></p>
+                            <p class="text-xs text-red-600 mt-2">⚠️ After payment, click Place Order</p>
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold">Place Order</button>
+                </form>
+            </div>
         </div>
-        <div class="p-6">
-          <input id="cName" placeholder="Full Name" class="w-full border px-4 py-2 rounded-lg mb-3">
-          <input id="cPhone" placeholder="Phone Number" class="w-full border px-4 py-2 rounded-lg mb-3">
-          <textarea id="cAddress" placeholder="Full Address" class="w-full border px-4 py-2 rounded-lg mb-3"></textarea>
-          <input id="cPincode" placeholder="Pincode" class="w-full border px-4 py-2 rounded-lg mb-4">
-          <p class="font-semibold mb-2">Payment Method</p>
-          <label class="flex items-center gap-2 mb-2 p-3 border rounded-lg">
-            <input type="radio" name="payment" value="COD" checked>
-            <span>COD - Pay ₹0 now, pay on delivery</span>
-          </label>
-          <label class="flex items-center gap-2 mb-4 p-3 border rounded-lg">
-            <input type="radio" name="payment" value="UPI">
-            <span>UPI - Scan QR or pay to ${UPI_ID}</span>
-          </label>
-          <div id="upiQR" class="hidden text-center mb-4">
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=${UPI_ID}" class="mx-auto mb-2">
-            <p class="text-sm">UPI ID: ${UPI_ID}</p>
-          </div>
-          <button onclick="placeOrder()" class="w-full bg-orange-500 text-white py-3 rounded-lg font-semibold">PLACE ORDER</button>
-        </div>
-      </div>
-    `);
-    document.querySelectorAll('input[name="payment"]').forEach(r => {
-      r.addEventListener('change', (e) => {
-        document.getElementById('upiQR').classList.toggle('hidden', e.target.value !== 'UPI');
-      });
-    });
-  }
+    </div>
 
-  window.placeOrder = async () => {
-    const name = document.getElementById('cName').value;
-    const phone = document.getElementById('cPhone').value;
-    const address = document.getElementById('cAddress').value;
-    const pincode = document.getElementById('cPincode').value;
-    const payment = document.querySelector('input[name="payment"]:checked').value;
-    if (!name || !phone || !address || !pincode) { alert('Fill all fields'); return; }
-    
-    const cartItems = cart.map(item => {
-      const p = allProducts.find(x => x.id === item.productId);
-      return { productId: item.productId, name: p.name, size: item.size, qty: item.qty, price: p.price, supplierPrice: p.supplierPrice };
-    });
-    const total = cartItems.reduce((s, i) => s + i.price * i.qty, 0);
-    const supplierTotal = cartItems.reduce((s, i) => s + i.supplierPrice * i.qty, 0);
-    
-    const orderRef = push(ref(db, 'orders'));
-    const orderId = 'FFD' + Date.now();
-    await set(orderRef, {
-      orderId, uid: currentUser.uid, name, phone, address, pincode,
-      items: cartItems, total, supplierTotal, yourProfit: total - supplierTotal,
-      paymentMethod: payment, paymentStatus: payment === 'COD' ? 'Pending' : 'Paid',
-      status: 'New', returnStatus: 'None', timestamp: Date.now()
-    });
-    
-    cart = [];
-    await update(ref(db, `users/${currentUser.uid}`), { cart });
-    updateCounts();
-    closeModal();
-    
-    const msg = `New Order ${orderId}%0AName: ${name}%0APhone: ${phone}%0AAddress: ${address}, ${pincode}%0AItems: ${cartItems.map(i => i.name + ' (' + i.size + ')').join(', ')}%0ATotal: ₹${total}%0APayment: ${payment}`;
-    window.open(`https://wa.me/${WHATSAPP}?text=${msg}`, '_blank');
-    alert('Order Placed Successfully!');
-  }
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getDatabase, ref, push, set, onValue, update, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-  // Return Modal
-  window.showReturnModal = (orderId) => {
-    showModal(`
-      <div class="bg-white rounded-2xl p-6 max-w-sm w-full">
-        <h3 class="font-bold text-xl mb-4">Return Order</h3>
-        <select id="returnReason" class="w-full border px-4 py-2 rounded-lg mb-3">
-          <option>Size Issue</option>
-          <option>Damaged</option>
-          <option>Wrong Item</option>
-          <option>Don't Like Product</option>
-        </select>
-        <textarea id="returnComment" placeholder="Additional comments" class="w-full border px-4 py-2 rounded-lg mb-4"></textarea>
-        <button onclick="submitReturn('${orderId}')" class="w-full bg-orange-500 text-white py-3 rounded-lg">Submit Request</button>
-      </div>
-    `);
-  }
+        const FIREBASE_CONFIG = {apiKey:"AIzaSyDnN6Vqh6yNdWM6NVg_JFbMTrj37jheK9I",authDomain:"fashionfuel-7e841.firebaseapp.com",databaseURL:"https://fashionfuel-7e841-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"fashionfuel-7e841",storageBucket:"fashionfuel-7e841.firebasestorage.app",messagingSenderId:"457153779306",appId:"1:457153779306:web:7f8c6f6129da5f9e8bdc13",measurementId:"G-WL5KVK1KJX"};
+        const UPI_ID = "9113358739@fam";
+        const WHATSAPP = "9113358739";
 
-  window.submitReturn = async (orderId) => {
-    const reason = document.getElementById('returnReason').value;
-    const comment = document.getElementById('returnComment').value;
-    await set(ref(db, `returns/${orderId}`), { uid: currentUser.uid, reason, comment, status: 'Requested', timestamp: Date.now() });
-    await update(ref(db, `orders/${orderId}`), { returnStatus: 'Requested' });
-    closeModal();
-    alert('Return request received. Our team will WhatsApp you pickup details in 24hrs');
-    openAccount();
-  }
+        const app = initializeApp(FIREBASE_CONFIG);
+        const db = getDatabase(app);
 
-  // Modal Utils
-  function showModal(html) {
-    document.getElementById('modalContainer').innerHTML = `<div class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onclick="closeModal()"><div onclick="event.stopPropagation()">${html}</div></div>`;
-  }
-  window.closeModal = () => { document.getElementById('modalContainer').innerHTML = ''; }
+        let allProducts = {}, cart = [], currentProduct = null, currentCategory = 'All';
 
-  // Search
-  document.getElementById('searchBtn').onclick = () => document.getElementById('searchBar').classList.toggle('hidden');
-  document.getElementById('searchInput').oninput = (e) => {
-    const q = e.target.value.toLowerCase();
-    const filtered = allProducts.filter(p => p.name.toLowerCase().includes(q));
-    const grid = document.getElementById('productGrid');
-    grid.innerHTML = filtered.map(p
+        // Track Visitor
+        const visitorId = localStorage.getItem('visitorId') || Date.now();
+        localStorage.setItem('visitorId', visitorId);
+        set(ref(db, 'visitors/' + visitorId), { timestamp: Date.now() });
+
+        // Load Products
+        onValue(ref(db, 'products'), s => { allProducts = s.val() || {}; renderProducts(); });
+
+        function renderProducts() {
+            const grid = document.getElementById('product-grid');
+            grid.innerHTML = '';
+            Object.entries(allProducts).forEach(([key, p]) => {
+                if (currentCategory!== 'All' && p.category!== currentCategory) return;
+                const card = document.createElement('div');
+                card.className = 'product-card bg-white rounded-lg shadow-md overflow-hidden cursor-pointer';
+                card.onclick = () => openProductModal(key, p);
+                card.innerHTML = `<img src="${p.image}" class="w-full h-48 object-cover"><div class="p-3"><p class="font-semibold text-sm truncate">${p.name}</p><p class="text-lg font-bold text-blue-600">₹${p.price}</p>${p.featured? '<span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">Featured</span>' : ''}<p class="text-xs text-gray-500 mt-1">⭐ ${p.rating || 0} | 👁️ ${p.views || 0}</p></div>`;
+                grid.appendChild(card);
+            });
+        }
+
+        window.filterCategory = (cat) => {
+            currentCategory = cat;
+            document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('bg-blue-600', 'text-white'));
+            event.target.classList.add('bg-blue-600', 'text-white');
+            renderProducts();
+        };
+
+        window.openProductModal = (key, p) => {
+            currentProduct = {key,...p};
+            document.getElementById('modal-name').textContent = p.name;
+            document.getElementById('modal-img').src = p.image;
+            document.getElementById('modal-desc').textContent = p.description;
+            document.getElementById('modal-price').textContent = p.price;
+            const sizesDiv = document.getElementById('modal-sizes');
+            sizesDiv.innerHTML = '';
+            p.sizes.forEach(s => {
+                const btn = document.createElement('button');
+                btn.className = 'size-btn border px-4 py-2 rounded-lg';
+                btn.textContent = s;
+                btn.onclick = () => { document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected')); btn.classList.add('selected'); };
+                sizesDiv.appendChild(btn);
+            });
+            document.getElementById('product-modal').classList.add('active');
+            update(ref(db, 'products/' + key), { views: (p.views || 0) + 1 });
+        };
+
+        window.closeModal = () => document.getElementById('product-modal').classList.remove('active');
+
+        window.addToCartFromModal = () => {
+            const size = document.querySelector('.size-btn.selected');
+            if (!size) { alert('Please select a size'); return; }
+            const existing = cart.find(i => i.key === currentProduct.key && i.size === size.textContent);
+            if (existing) { existing.qty++; } else { cart.push({...currentProduct, size: size.textContent, qty: 1}); }
+            updateCartCount();
+            closeModal();
+            alert('Added to cart!');
+        };
+
+        window.openCart = () => {
+            renderCart();
+            document.getElementById('cart-modal').classList.add('active');
+        };
+
+        window.closeCart = () => document.getElementById('cart-modal').classList.remove('active');
+
+        function renderCart() {
+            const itemsDiv = document.getElementById('cart-items');
+            itemsDiv.innerHTML = '';
+            let total = 0;
+            cart.forEach((item, idx) => {
+                total += item.price * item.qty;
+                itemsDiv.innerHTML += `<div class="flex gap-3 border rounded-lg p-2"><img src="${item.image}" class="w-16 h-16 object-cover rounded"><div class="flex-1"><p class="font-semibold text-sm">${item.name}</p><p class="text-xs text-gray-600">Size: ${item.size} | ₹${item.price}</p><div class="flex items-center gap-2 mt-1"><button onclick="updateQty(${idx}, -1)" class="bg-gray-200 px-2 rounded">-</button><span class="text-sm">${item.qty}</span><button onclick="updateQty(${idx}, 1)" class="bg-gray-200 px-2 rounded">+</button><button onclick="removeFromCart(${idx})" class="text-red-600 text-xs ml-2">Remove</button></div></div></div>`;
+            });
+            document.getElementById('cart-total').textContent = total;
+            document.getElementById('upi-amount').textContent = total;
+        }
+
+        window.updateQty = (idx, change) => { cart[idx].qty += change; if (cart[idx].qty <= 0) cart.splice(idx, 1); updateCartCount(); renderCart(); };
+        window.removeFromCart = (idx) => { cart.splice(idx, 1); updateCartCount(); renderCart(); };
+        function updateCartCount() { document.getElementById('cart-count').textContent = cart.reduce((sum, i) => sum + i.qty, 0); }
+
+        window.openCheckout = () => {
+            if (cart.length === 0) { alert('Cart is empty'); return; }
+            closeCart();
+            document.getElementById('checkout-modal').classList.add('active');
+        };
+
+        window.closeCheckout = () => document.getElementById('checkout-modal').classList.remove('active');
+
+        window.toggleUPI = () => {
+            const upiSection = document.getElementById('upi-section');
+            const isUPI = document.querySelector('input[name="payment"]:checked').value === 'UPI';
+            upiSection.classList.toggle('hidden',!isUPI);
+            if (isUPI) {
+                const total = cart.reduce((sum, i) => sum + i.price * i.qty, 0);
+                document.getElementById('qrcode').innerHTML = '';
+                new QRCode(document.getElementById('qrcode'), {
+                    text: `upi://pay?pa=${UPI_ID}&pn=FashionFuel&am=${total}&cu=INR`,
+                    width: 200,
+                    height: 200
+                });
+            }
+        };
+
+        document.getElementById('checkout-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const order = {
+                name: document.getElementById('co-name').value,
+                phone: document.getElementById('co-phone').value,
+                address: document.getElementById('co-address').value,
+                city: document.getElementById('co-city').value,
+                pincode: document.getElementById('co-pincode').value,
+                items: cart.map(i => ({name: i.name, price: i.price, size: i.size, qty: i.qty})),
+                total: cart.reduce((sum, i) => sum + i.price * i.qty, 0),
+                paymentMethod: document.querySelector('input[name="payment"]:checked').value,
+                status: 'Pending',
+                codVerified: false,
+                timestamp: Date.now()
+            };
+            await push(ref(db, 'orders'), order);
+            await set(ref(db, 'users/' + order.phone), {name: order.name, phone: order.phone, lastOrder: Date.now(), blocked: false});
+            cart = [];
+            updateCartCount();
+            closeCheckout();
+            alert('Order Placed Successfully! We will contact you soon.');
+            const msg = `Hi, I placed an order. Name: ${order.name}, Phone: ${order.phone}, Total: ₹${order.total}`;
+            window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`, '_blank');
+        };
+
+        document.getElementById('contact-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const msg = {name: document.getElementById('c-name').value, email: document.getElementById('c-email').value, message: document.getElementById('c-message').value, timestamp: Date.now(), replied: false};
+            await push(ref(db, 'messages'), msg);
+            e.target.reset();
+            alert('Message sent! We will reply soon.');
+        };
+    </script>
+</body>
+</html>
