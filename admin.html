@@ -3,194 +3,210 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel - Fashion Fuel</title>
+    <title>Fashion Fuel - Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>body{font-family:Poppins,sans-serif}</style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="bg-gray-100">
-    <div id="login-screen" class="min-h-screen flex items-center justify-center">
-        <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-sm">
-            <h1 class="text-2xl font-bold text-center mb-6">Admin Login</h1>
-            <button id="google-login" class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold">Login with Google</button>
-            <p id="login-error" class="text-red-500 text-sm mt-4 text-center"></p>
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div class="w-64 bg-orange-600 text-white p-4">
+            <h1 class="text-2xl font-bold mb-8">Fashion Fuel</h1>
+            <ul>
+                <li><button onclick="showTab('dashboard')" class="w-full text-left py-2 px-4 hover:bg-orange-700 rounded mb-1"><i class="fas fa-chart-line mr-2"></i>Dashboard</button></li>
+                <li><button onclick="showTab('products')" class="w-full text-left py-2 px-4 hover:bg-orange-700 rounded mb-1"><i class="fas fa-box mr-2"></i>Products</button></li>
+                <li><button onclick="showTab('orders')" class="w-full text-left py-2 px-4 hover:bg-orange-700 rounded mb-1"><i class="fas fa-shopping-bag mr-2"></i>Orders</button></li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 p-8 overflow-y-auto">
+            <!-- Dashboard -->
+            <div id="dashboard" class="tab-content">
+                <h2 class="text-3xl font-bold mb-6">Dashboard</h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <h3 class="text-gray-500">All Products</h3>
+                        <p id="totalProducts" class="text-3xl font-bold text-orange-600">0</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <h3 class="text-gray-500">Total Orders</h3>
+                        <p id="totalOrders" class="text-3xl font-bold text-orange-600">0</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <h3 class="text-gray-500">Total Users</h3>
+                        <p id="totalUsers" class="text-3xl font-bold text-orange-600">0</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <h3 class="text-gray-500">Messages</h3>
+                        <p id="totalMessages" class="text-3xl font-bold text-orange-600">0</p>
+                    </div>
+                </div>
+
+                <h3 class="text-xl font-bold mb-4">Recent Messages from Contact Us</h3>
+                <div id="messagesList" class="bg-white rounded-lg shadow p-4"></div>
+            </div>
+
+            <!-- Products -->
+            <div id="products" class="tab-content hidden">
+                <h2 class="text-3xl font-bold mb-6">Products</h2>
+                <div class="bg-white p-6 rounded-lg shadow mb-6">
+                    <h3 class="text-xl font-bold mb-4">Add New Product</h3>
+                    <input id="pName" placeholder="Product Name" class="w-full border p-2 mb-3 rounded">
+                    <input id="pPrice" placeholder="Price" type="number" class="w-full border p-2 mb-3 rounded">
+                    <textarea id="pDesc" placeholder="Description" class="w-full border p-2 mb-3 rounded"></textarea>
+                    <input id="pImg1" placeholder="Image URL 1 - Main Image" class="w-full border p-2 mb-2 rounded">
+                    <input id="pImg2" placeholder="Image URL 2" class="w-full border p-2 mb-2 rounded">
+                    <input id="pImg3" placeholder="Image URL 3" class="w-full border p-2 mb-3 rounded">
+                    <button onclick="addProduct()" class="bg-orange-500 text-white px-6 py-2 rounded font-bold hover:bg-orange-600">Add Product</button>
+                </div>
+                <div id="productList" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+            </div>
+
+            <!-- Orders -->
+            <div id="orders" class="tab-content hidden">
+                <h2 class="text-3xl font-bold mb-6">Order Details</h2>
+                <div id="orderList" class="space-y-4"></div>
+            </div>
         </div>
     </div>
 
-    <div id="admin-panel" class="hidden">
-        <header class="bg-white shadow-md p-4 flex justify-between items-center">
-            <h1 class="text-xl font-bold">Fashion Fuel - Admin</h1>
-            <div class="flex items-center gap-4">
-                <span id="admin-email" class="text-sm"></span>
-                <button id="logout" class="bg-red-500 text-white px-4 py-2 rounded-lg text-sm">Logout</button>
-            </div>
-        </header>
+<script>
+// Data
+let products = JSON.parse(localStorage.getItem('products')) || [];
+let orders = JSON.parse(localStorage.getItem('orders')) || [];
+let messages = JSON.parse(localStorage.getItem('messages')) || [];
 
-        <main class="p-6 max-w-7xl mx-auto">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                
-                <div class="bg-white p-6 rounded-xl shadow-md">
-                    <h2 class="text-lg font-bold mb-4">Add New Product</h2>
-                    <form id="add-product-form" class="space-y-4">
-                        <input type="text" id="p-name" placeholder="Product Name" class="w-full p-3 border rounded-lg" required>
-                        <input type="number" id="p-price" placeholder="Price" class="w-full p-3 border rounded-lg" required>
-                        <select id="p-category" class="w-full p-3 border rounded-lg" required>
-                            <option value="">Select Category</option>
-                            <option value="Shirts">Shirts</option>
-                            <option value="T-Shirts">T-Shirts</option>
-                            <option value="Jeans">Jeans</option>
-                            <option value="Shoes">Shoes</option>
-                            <option value="Watches">Watches</option>
-                            <option value="Accessories">Accessories</option>
-                        </select>
-                        <textarea id="p-desc" placeholder="Description" class="w-full p-3 border rounded-lg" rows="3"></textarea>
-                        <input type="url" id="p-img" placeholder="Image URL" class="w-full p-3 border rounded-lg" required>
-                        <button type="submit" class="w-full bg-green-600 text-white py-3 rounded-lg font-semibold">Add Product</button>
-                    </form>
-                </div>
+function showTab(tab) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
+    document.getElementById(tab).classList.remove('hidden');
+    if(tab === 'dashboard') loadDashboard();
+    if(tab === 'products') loadProducts();
+    if(tab === 'orders') loadOrders();
+}
 
-                <div class="bg-white p-6 rounded-xl shadow-md">
-                    <h2 class="text-lg font-bold mb-4">All Products</h2>
-                    <div id="product-list" class="space-y-3 max-h-96 overflow-y-auto"></div>
-                </div>
-            </div>
+function addProduct() {
+    const images = [
+        document.getElementById('pImg1').value,
+        document.getElementById('pImg2').value,
+        document.getElementById('pImg3').value
+    ].filter(img => img);
 
-            <div class="bg-white p-6 rounded-xl shadow-md mt-6">
-                <h2 class="text-lg font-bold mb-4">All Orders</h2>
-                <div id="order-list" class="space-y-4"></div>
-            </div>
-        </main>
-    </div>
+    if(!document.getElementById('pName').value ||!document.getElementById('pPrice').value || images.length === 0) {
+        alert('Please fill Name, Price and at least 1 Image URL');
+        return;
+    }
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        import { getDatabase, ref, push, set, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+    const product = {
+        id: Date.now(),
+        name: document.getElementById('pName').value,
+        price: document.getElementById('pPrice').value,
+        description: document.getElementById('pDesc').value,
+        images: images,
+        image: images[0]
+    };
+    products.push(product);
+    localStorage.setItem('products', JSON.stringify(products));
+    alert('Product Added!');
 
-        const FIREBASE_CONFIG = {
-            apiKey: "AIzaSyDnN6Vqh6yNdWM6NVg_JFbMTrj37jheK9I",
-            authDomain: "fashionfuel-7e841.firebaseapp.com",
-            databaseURL: "https://fashionfuel-7e841-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "fashionfuel-7e841",
-            storageBucket: "fashionfuel-7e841.firebasestorage.app",
-            messagingSenderId: "457153779306",
-            appId: "1:457153779306:web:7f8c6f6129da5f9e8bdc13",
-            measurementId: "G-WL5KVK1KJX"
-        };
+    // Clear fields
+    document.getElementById('pName').value = '';
+    document.getElementById('pPrice').value = '';
+    document.getElementById('pDesc').value = '';
+    document.getElementById('pImg1').value = '';
+    document.getElementById('pImg2').value = '';
+    document.getElementById('pImg3').value = '';
 
-        const ADMIN_EMAIL = "hypecircuit.agency@gmail.com"; // 
+    loadProducts();
+    loadDashboard();
+}
 
-        const app = initializeApp(FIREBASE_CONFIG);
-        const auth = getAuth(app);
-        const db = getDatabase(app);
-        const provider = new GoogleAuthProvider();
+function deleteProduct(index) {
+    if(confirm('Are you sure you want to delete this product?')) {
+        products.splice(index, 1);
+        localStorage.setItem('products', JSON.stringify(products));
+        loadProducts();
+        loadDashboard();
+    }
+}
 
-        const loginScreen = document.getElementById('login-screen');
-        const adminPanel = document.getElementById('admin-panel');
-        const loginError = document.getElementById('login-error');
+function loadDashboard() {
+    document.getElementById('totalProducts').innerText = products.length;
+    document.getElementById('totalOrders').innerText = orders.length;
+    document.getElementById('totalUsers').innerText = new Set(orders.map(o => o.email)).size;
+    document.getElementById('totalMessages').innerText = messages.length;
 
-        document.getElementById('google-login').onclick = () => {
-            signInWithPopup(auth, provider).catch(err => loginError.textContent = err.message);
-        };
-
-        document.getElementById('logout').onclick = () => signOut(auth);
-
-        onAuthStateChanged(auth, (user) => {
-            if (user && user.email === ADMIN_EMAIL) {
-                loginScreen.classList.add('hidden');
-                adminPanel.classList.remove('hidden');
-                document.getElementById('admin-email').textContent = user.email;
-                loadProducts();
-                loadOrders();
-            } else if (user) {
-                loginError.textContent = "You are not authorized as admin";
-                signOut(auth);
-            } else {
-                loginScreen.classList.remove('hidden');
-                adminPanel.classList.add('hidden');
-            }
+    let msgHtml = '';
+    if(messages.length === 0) {
+        msgHtml = '<p class="text-gray-500 text-center py-4">No messages yet</p>';
+    } else {
+        messages.slice().reverse().forEach(m => {
+            msgHtml += `<div class="border-b py-3">
+                <p class="font-bold">${m.name} <span class="text-xs text-gray-500 font-normal">(${m.email})</span></p>
+                <p class="text-gray-700">${m.message}</p>
+                <p class="text-xs text-gray-400 mt-1">${m.date}</p>
+            </div>`;
         });
+    }
+    document.getElementById('messagesList').innerHTML = msgHtml;
+}
 
-        document.getElementById('add-product-form').onsubmit = (e) => {
-            e.preventDefault();
-            const product = {
-                name: document.getElementById('p-name').value,
-                price: parseFloat(document.getElementById('p-price').value),
-                category: document.getElementById('p-category').value,
-                description: document.getElementById('p-desc').value,
-                image: document.getElementById('p-img').value,
-                createdAt: Date.now()
-            };
-            push(ref(db, 'products'), product).then(() => {
-                e.target.reset();
-                alert('Product Added!');
-            });
-        };
+function loadProducts() {
+    let html = '';
+    if(products.length === 0) {
+        html = '<p class="col-span-3 text-center text-gray-500 py-8">No products added yet</p>';
+    } else {
+        products.forEach((p, index) => {
+            html += `<div class="bg-white p-4 rounded shadow relative">
+                <button onclick="deleteProduct(${index})" class="absolute top-2 right-2 bg-red-500 text-white w-8 h-8 rounded-full hover:bg-red-600"><i class="fas fa-trash text-xs"></i></button>
+                <img src="${p.image}" class="h-40 w-full object-cover mb-2 rounded">
+                <h3 class="font-bold">${p.name}</h3>
+                <p class="text-orange-600 font-bold">₹${p.price}</p>
+                <p class="text-xs text-gray-500 mt-1">${p.images.length} Images</p>
+            </div>`;
+        });
+    }
+    document.getElementById('productList').innerHTML = html;
+}
 
-        function loadProducts() {
-            onValue(ref(db, 'products'), (snapshot) => {
-                const list = document.getElementById('product-list');
-                list.innerHTML = '';
-                snapshot.forEach(child => {
-                    const p = child.val();
-                    const key = child.key;
-                    list.innerHTML += `
-                        <div class="flex items-center justify-between p-3 border rounded-lg">
-                            <div class="flex items-center gap-3">
-                                <img src="${p.image}" class="w-12 h-12 object-cover rounded">
-                                <div>
-                                    <p class="font-semibold">${p.name}</p>
-                                    <p class="text-sm text-gray-600">₹${p.price} - ${p.category}</p>
-                                </div>
-                            </div>
-                            <button onclick="deleteProduct('${key}')" class="bg-red-500 text-white px-3 py-1 rounded text-sm">Delete</button>
-                        </div>`;
-                });
-            });
-        }
+function loadOrders() {
+    let html = '';
+    if(orders.length === 0) {
+        html = '<p class="text-center text-gray-500 py-8">No orders yet</p>';
+    } else {
+        orders.slice().reverse().forEach((o, index) => {
+            html += `<div class="bg-white p-6 rounded shadow">
+                <div class="flex justify-between items-start mb-3">
+                    <h3 class="font-bold text-lg">Order #${orders.length - index}</h3>
+                    <span class="bg-green-100 text-green-800 text-xs px-3 py-1 rounded-full">${o.payment}</span>
+                </div>
+                <div class="grid md:grid-cols-2 gap-4 text-sm">
+                    <div>
+                        <p><b>Customer:</b> ${o.name}</p>
+                        <p><b>Mobile:</b> ${o.phone}</p>
+                        <p><b>Email:</b> ${o.email}</p>
+                        <p><b>Size:</b> ${o.size} | <b>Colour:</b> ${o.colour}</p>
+                    </div>
+                    <div>
+                        <p><b>Address:</b> ${o.address}</p>
+                        <p><b>Landmark:</b> ${o.landmark}</p>
+                        <p><b>Pincode:</b> ${o.pincode}</p>
+                        <p><b>Date:</b> ${o.date}</p>
+                    </div>
+                </div>
+                <div class="mt-3 pt-3 border-t">
+                    <p class="font-bold mb-1">Products:</p>
+                    <p class="text-gray-700">${o.items.map(i => `${i.name} x${i.qty}`).join(', ')}</p>
+                    <p class="text-xl font-bold text-orange-600 mt-2">Total: ₹${o.total}</p>
+                </div>
+            </div>`;
+        });
+    }
+    document.getElementById('orderList').innerHTML = html;
+}
 
-        window.deleteProduct = (key) => {
-            if(confirm('Delete this product?')) {
-                remove(ref(db, 'products/' + key));
-            }
-        };
-
-        function loadOrders() {
-            onValue(ref(db, 'orders'), (snapshot) => {
-                const list = document.getElementById('order-list');
-                list.innerHTML = '';
-                snapshot.forEach(child => {
-                    const o = child.val();
-                    const key = child.key;
-                    const items = o.items.map(i => `${i.name} x${i.qty}`).join(', ');
-                    list.innerHTML += `
-                        <div class="border rounded-lg p-4">
-                            <div class="flex justify-between items-start mb-2">
-                                <div>
-                                    <p class="font-bold">${o.name}</p>
-                                    <p class="text-sm text-gray-600">${o.email} | ${o.phone}</p>
-                                    <p class="text-sm text-gray-600">${o.address}, ${o.city} - ${o.pincode}</p>
-                                </div>
-                                <div class="text-right">
-                                    <p class="font-bold text-lg">₹${o.total}</p>
-                                    <select onchange="updateStatus('${key}', this.value)" class="text-sm border rounded p-1 mt-1">
-                                        <option ${o.status==='Pending'?'selected':''}>Pending</option>
-                                        <option ${o.status==='Confirmed'?'selected':''}>Confirmed</option>
-                                        <option ${o.status==='Shipped'?'selected':''}>Shipped</option>
-                                        <option ${o.status==='Delivered'?'selected':''}>Delivered</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <p class="text-sm"><b>Items:</b> ${items}</p>
-                            <p class="text-xs text-gray-500 mt-2">UPI: ${o.upi} | ${new Date(o.timestamp).toLocaleString()}</p>
-                        </div>`;
-                });
-            });
-        }
-
-        window.updateStatus = (key, status) => {
-            update(ref(db, 'orders/' + key), { status: status });
-        };
-    </script>
+// Init
+showTab('dashboard');
+</script>
 </body>
 </html>
