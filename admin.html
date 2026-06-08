@@ -5,20 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - Fashion Fuel</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>body{font-family:Poppins,sans-serif}</style>
+    <style>
+        body{font-family:Poppins,sans-serif}
+      .tab-active{background:#2563eb;color:white}
+      .status-pending{background:#fef3c7;color:#92400e}
+      .status-confirmed{background:#dbeafe;color:#1e40af}
+      .status-shipped{background:#e0e7ff;color:#4338ca}
+      .status-delivered{background:#d1fae5;color:#065f46}
+      .status-cancelled{background:#fee2e2;color:#991b1b}
+      .status-refunded{background:#fce7f3;color:#9d174d}
+    </style>
 </head>
 <body class="bg-gray-100">
     <div id="login-screen" class="min-h-screen flex items-center justify-center">
         <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-sm">
-            <h1 class="text-2xl font-bold text-center mb-6">Admin Login</h1>
+            <h1 class="text-2xl font-bold text-center mb-6">Fashion Fuel Admin</h1>
             <button id="google-login" class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold">Login with Google</button>
             <p id="login-error" class="text-red-500 text-sm mt-4 text-center"></p>
         </div>
     </div>
 
     <div id="admin-panel" class="hidden">
-        <header class="bg-white shadow-md p-4 flex justify-between items-center">
+        <header class="bg-white shadow-md p-4 flex justify-between items-center sticky top-0 z-10">
             <h1 class="text-xl font-bold">Fashion Fuel - Admin</h1>
             <div class="flex items-center gap-4">
                 <span id="admin-email" class="text-sm"></span>
@@ -26,171 +37,281 @@
             </div>
         </header>
 
-        <main class="p-6 max-w-7xl mx-auto">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                
-                <div class="bg-white p-6 rounded-xl shadow-md">
-                    <h2 class="text-lg font-bold mb-4">Add New Product</h2>
-                    <form id="add-product-form" class="space-y-4">
-                        <input type="text" id="p-name" placeholder="Product Name" class="w-full p-3 border rounded-lg" required>
-                        <input type="number" id="p-price" placeholder="Price" class="w-full p-3 border rounded-lg" required>
-                        <select id="p-category" class="w-full p-3 border rounded-lg" required>
-                            <option value="">Select Category</option>
-                            <option value="Shirts">Shirts</option>
-                            <option value="T-Shirts">T-Shirts</option>
-                            <option value="Jeans">Jeans</option>
-                            <option value="Shoes">Shoes</option>
-                            <option value="Watches">Watches</option>
-                            <option value="Accessories">Accessories</option>
-                        </select>
-                        <textarea id="p-desc" placeholder="Description" class="w-full p-3 border rounded-lg" rows="3"></textarea>
-                        <input type="url" id="p-img" placeholder="Image URL" class="w-full p-3 border rounded-lg" required>
-                        <button type="submit" class="w-full bg-green-600 text-white py-3 rounded-lg font-semibold">Add Product</button>
-                    </form>
+        <div class="flex">
+            <aside class="w-64 bg-white h-screen sticky top-16 shadow-md p-4 overflow-y-auto">
+                <nav class="space-y-2">
+                    <button onclick="showTab('dashboard')" class="tab-btn w-full text-left px-4 py-2 rounded-lg tab-active">📊 Dashboard</button>
+                    <button onclick="showTab('products')" class="tab-btn w-full text-left px-4 py-2 rounded-lg">📦 Products</button>
+                    <button onclick="showTab('orders')" class="tab-btn w-full text-left px-4 py-2 rounded-lg">🛒 Orders</button>
+                    <button onclick="showTab('users')" class="tab-btn w-full text-left px-4 py-2 rounded-lg">👥 Users</button>
+                    <button onclick="showTab('messages')" class="tab-btn w-full text-left px-4 py-2 rounded-lg">💬 Messages</button>
+                    <button onclick="showTab('complaints')" class="tab-btn w-full text-left px-4 py-2 rounded-lg">⚠️ Complaints</button>
+                    <button onclick="showTab('reviews')" class="tab-btn w-full text-left px-4 py-2 rounded-lg">⭐ Reviews</button>
+                </nav>
+            </aside>
+
+            <main class="flex-1 p-6">
+                <div id="dashboard-tab" class="tab-content">
+                    <h2 class="text-2xl font-bold mb-6">Dashboard Overview</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                        <div class="bg-white p-4 rounded-xl shadow-md"><p class="text-sm text-gray-600">Total Revenue</p><p id="total-revenue" class="text-2xl font-bold">₹0</p></div>
+                        <div class="bg-white p-4 rounded-xl shadow-md"><p class="text-sm text-gray-600">Total Orders</p><p id="total-orders" class="text-2xl font-bold">0</p></div>
+                        <div class="bg-white p-4 rounded-xl shadow-md"><p class="text-sm text-gray-600">Total Products</p><p id="total-products" class="text-2xl font-bold">0</p></div>
+                        <div class="bg-white p-4 rounded-xl shadow-md"><p class="text-sm text-gray-600">Total Users</p><p id="total-users" class="text-2xl font-bold">0</p></div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <div class="bg-white p-4 rounded-xl shadow-md"><p class="text-sm text-gray-600">Today's Visitors</p><p id="today-visitors" class="text-2xl font-bold">0</p></div>
+                        <div class="bg-white p-4 rounded-xl shadow-md"><p class="text-sm text-gray-600">Conversion Rate</p><p id="conversion-rate" class="text-2xl font-bold">0%</p></div>
+                        <div class="bg-white p-4 rounded-xl shadow-md"><p class="text-sm text-gray-600">Pending Orders</p><p id="pending-orders" class="text-2xl font-bold">0</p></div>
+                    </div>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                        <div class="bg-white p-6 rounded-xl shadow-md"><h3 class="text-lg font-bold mb-4">Sales Graph - Last 7 Days</h3><canvas id="sales-chart"></canvas></div>
+                        <div class="bg-white p-6 rounded-xl shadow-md"><h3 class="text-lg font-bold mb-4">Top Selling Products</h3><div id="top-products" class="space-y-2"></div></div>
+                    </div>
                 </div>
 
-                <div class="bg-white p-6 rounded-xl shadow-md">
-                    <h2 class="text-lg font-bold mb-4">All Products</h2>
-                    <div id="product-list" class="space-y-3 max-h-96 overflow-y-auto"></div>
+                <div id="products-tab" class="tab-content hidden">
+                    <h2 class="text-2xl font-bold mb-6">Product Management</h2>
+                    <div class="bg-white p-6 rounded-xl shadow-md mb-6">
+                        <h3 class="text-lg font-bold mb-4">Add New Product</h3>
+                        <form id="add-product-form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <input type="text" id="p-name" placeholder="Product Name" class="p-2 border rounded-lg" required>
+                            <input type="number" id="p-price" placeholder="Price" class="p-2 border rounded-lg" required>
+                            <input type="text" id="p-sizes" placeholder="Sizes: S,M,L,XL" class="p-2 border rounded-lg" required>
+                            <select id="p-category" class="p-2 border rounded-lg" required>
+                                <option value="">Select Category</option><option value="Shirts">Shirts</option><option value="T-Shirts">T-Shirts</option><option value="Jeans">Jeans</option><option value="Shoes">Shoes</option><option value="Watches">Watches</option><option value="Accessories">Accessories</option>
+                            </select>
+                            <input type="url" id="p-img" placeholder="Image URL" class="p-2 border rounded-lg" required>
+                            <textarea id="p-desc" placeholder="Description" class="p-2 border rounded-lg md:col-span-2" rows="2"></textarea>
+                            <label class="flex items-center gap-2 md:col-span-2"><input type="checkbox" id="p-featured"> <span class="text-sm">Featured Product</span></label>
+                            <button type="submit" class="md:col-span-2 bg-green-600 text-white py-2 rounded-lg font-semibold">Add Product</button>
+                        </form>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md"><h3 class="text-lg font-bold mb-4">All Products</h3><div id="product-list" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div></div>
                 </div>
-            </div>
 
-            <div class="bg-white p-6 rounded-xl shadow-md mt-6">
-                <h2 class="text-lg font-bold mb-4">All Orders</h2>
-                <div id="order-list" class="space-y-4"></div>
-            </div>
-        </main>
+                <div id="orders-tab" class="tab-content hidden">
+                    <h2 class="text-2xl font-bold mb-6">Order Management</h2>
+                    <div class="bg-white p-4 rounded-xl shadow-md mb-4">
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <select id="filter-status" class="border rounded p-2 text-sm"><option value="">All Status</option><option value="Pending">Pending</option><option value="Confirmed">Confirmed</option><option value="Shipped">Shipped</option><option value="Delivered">Delivered</option><option value="Cancelled">Cancelled</option><option value="Refunded">Refunded</option></select>
+                            <select id="filter-payment" class="border rounded p-2 text-sm"><option value="">All Payment</option><option value="COD">COD</option><option value="UPI">UPI</option></select>
+                            <input type="date" id="filter-date" class="border rounded p-2 text-sm">
+                            <input type="text" id="search-order" placeholder="Search Name/Phone" class="border rounded p-2 text-sm flex-1">
+                        </div>
+                        <div id="order-list" class="space-y-4"></div>
+                    </div>
+                </div>
+
+                <div id="users-tab" class="tab-content hidden"><h2 class="text-2xl font-bold mb-6">User Management</h2><div class="bg-white p-6 rounded-xl shadow-md"><div id="user-list" class="space-y-3"></div></div></div>
+                <div id="messages-tab" class="tab-content hidden"><h2 class="text-2xl font-bold mb-6">Contact Messages</h2><div class="bg-white p-6 rounded-xl shadow-md"><div id="message-list" class="space-y-4"></div></div></div>
+                <div id="complaints-tab" class="tab-content hidden"><h2 class="text-2xl font-bold mb-6">Complaint Tickets</h2><div class="bg-white p-6 rounded-xl shadow-md"><div id="complaint-list" class="space-y-4"></div></div></div>
+                <div id="reviews-tab" class="tab-content hidden"><h2 class="text-2xl font-bold mb-6">Product Reviews & Ratings</h2><div class="bg-white p-6 rounded-xl shadow-md"><div id="review-list" class="space-y-4"></div></div></div>
+            </main>
+        </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
         import { getDatabase, ref, push, set, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-
-        const FIREBASE_CONFIG = {
-            apiKey: "AIzaSyDnN6Vqh6yNdWM6NVg_JFbMTrj37jheK9I",
-            authDomain: "fashionfuel-7e841.firebaseapp.com",
-            databaseURL: "https://fashionfuel-7e841-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "fashionfuel-7e841",
-            storageBucket: "fashionfuel-7e841.firebasestorage.app",
-            messagingSenderId: "457153779306",
-            appId: "1:457153779306:web:7f8c6f6129da5f9e8bdc13",
-            measurementId: "G-WL5KVK1KJX"
-        };
-
-        const ADMIN_EMAIL = "hypecircuit.agency@gmail.com"; // 
-
+        const FIREBASE_CONFIG = {apiKey:"AIzaSyDnN6Vqh6yNdWM6NVg_JFbMTrj37jheK9I",authDomain:"fashionfuel-7e841.firebaseapp.com",databaseURL:"https://fashionfuel-7e841-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"fashionfuel-7e841",storageBucket:"fashionfuel-7e841.firebasestorage.app",messagingSenderId:"457153779306",appId:"1:457153779306:web:7f8c6f6129da5f9e8bdc13",measurementId:"G-WL5KVK1KJX"};
+        const ADMIN_EMAIL = "hypecircuit.agency@gmail.com";
+        const UPI_ID = "9113358739@fam";
         const app = initializeApp(FIREBASE_CONFIG);
         const auth = getAuth(app);
         const db = getDatabase(app);
         const provider = new GoogleAuthProvider();
-
-        const loginScreen = document.getElementById('login-screen');
-        const adminPanel = document.getElementById('admin-panel');
-        const loginError = document.getElementById('login-error');
-
-        document.getElementById('google-login').onclick = () => {
-            signInWithPopup(auth, provider).catch(err => loginError.textContent = err.message);
-        };
-
+        const { jsPDF } = window.jspdf;
+        let allOrders = {}, allProducts = {}, allUsers = {}, allMessages = {}, allComplaints = {}, allReviews = {};
+        let salesChart;
+        document.getElementById('google-login').onclick = () => signInWithPopup(auth, provider).catch(err => document.getElementById('login-error').textContent = err.message);
         document.getElementById('logout').onclick = () => signOut(auth);
-
         onAuthStateChanged(auth, (user) => {
             if (user && user.email === ADMIN_EMAIL) {
-                loginScreen.classList.add('hidden');
-                adminPanel.classList.remove('hidden');
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('admin-panel').classList.remove('hidden');
                 document.getElementById('admin-email').textContent = user.email;
-                loadProducts();
-                loadOrders();
+                loadAllData();
             } else if (user) {
-                loginError.textContent = "You are not authorized as admin";
+                document.getElementById('login-error').textContent = "You are not authorized";
                 signOut(auth);
             } else {
-                loginScreen.classList.remove('hidden');
-                adminPanel.classList.add('hidden');
+                document.getElementById('login-screen').classList.remove('hidden');
+                document.getElementById('admin-panel').classList.add('hidden');
             }
         });
-
+        window.showTab = (tab) => {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('tab-active'));
+            document.getElementById(tab + '-tab').classList.remove('hidden');
+            event.target.classList.add('tab-active');
+        };
+        function loadAllData() {
+            onValue(ref(db, 'products'), s => { allProducts = s.val() || {}; updateDashboard(); renderProducts(); });
+            onValue(ref(db, 'orders'), s => { allOrders = s.val() || {}; updateDashboard(); renderOrders(); renderSalesChart(); renderTopProducts(); });
+            onValue(ref(db, 'users'), s => { allUsers = s.val() || {}; updateDashboard(); renderUsers(); });
+            onValue(ref(db, 'messages'), s => { allMessages = s.val() || {}; renderMessages(); });
+            onValue(ref(db, 'complaints'), s => { allComplaints = s.val() || {}; renderComplaints(); });
+            onValue(ref(db, 'reviews'), s => { allReviews = s.val() || {}; renderReviews(); });
+            onValue(ref(db, 'visitors'), s => { const v = s.val() || {}; document.getElementById('today-visitors').textContent = Object.keys(v).length; updateDashboard(); });
+        }
+        function updateDashboard() {
+            const orders = Object.values(allOrders);
+            let revenue = 0, pending = 0;
+            orders.forEach(o => { if(o.status!=='Cancelled' && o.status!=='Refunded') revenue += o.total; if(o.status==='Pending') pending++; });
+            document.getElementById('total-revenue').textContent = '₹' + revenue;
+            document.getElementById('total-orders').textContent = orders.length;
+            document.getElementById('total-products').textContent = Object.keys(allProducts).length;
+            document.getElementById('total-users').textContent = Object.keys(allUsers).length;
+            document.getElementById('pending-orders').textContent = pending;
+            const visitors = parseInt(document.getElementById('today-visitors').textContent) || 1;
+            const conversion = orders.length > 0? ((orders.length / visitors) * 100).toFixed(1) : 0;
+            document.getElementById('conversion-rate').textContent = conversion + '%';
+        }
         document.getElementById('add-product-form').onsubmit = (e) => {
             e.preventDefault();
-            const product = {
-                name: document.getElementById('p-name').value,
-                price: parseFloat(document.getElementById('p-price').value),
-                category: document.getElementById('p-category').value,
-                description: document.getElementById('p-desc').value,
-                image: document.getElementById('p-img').value,
-                createdAt: Date.now()
-            };
-            push(ref(db, 'products'), product).then(() => {
-                e.target.reset();
-                alert('Product Added!');
-            });
+            const product = {name: document.getElementById('p-name').value,price: parseFloat(document.getElementById('p-price').value),sizes: document.getElementById('p-sizes').value.split(','),category: document.getElementById('p-category').value,description: document.getElementById('p-desc').value,image: document.getElementById('p-img').value,featured: document.getElementById('p-featured').checked,views: 0, rating: 0, reviewCount: 0, createdAt: Date.now()};
+            push(ref(db, 'products'), product).then(() => { e.target.reset(); alert('Product Added!'); });
         };
-
-        function loadProducts() {
-            onValue(ref(db, 'products'), (snapshot) => {
-                const list = document.getElementById('product-list');
-                list.innerHTML = '';
-                snapshot.forEach(child => {
-                    const p = child.val();
-                    const key = child.key;
-                    list.innerHTML += `
-                        <div class="flex items-center justify-between p-3 border rounded-lg">
-                            <div class="flex items-center gap-3">
-                                <img src="${p.image}" class="w-12 h-12 object-cover rounded">
-                                <div>
-                                    <p class="font-semibold">${p.name}</p>
-                                    <p class="text-sm text-gray-600">₹${p.price} - ${p.category}</p>
-                                </div>
-                            </div>
-                            <button onclick="deleteProduct('${key}')" class="bg-red-500 text-white px-3 py-1 rounded text-sm">Delete</button>
-                        </div>`;
-                });
+        function renderProducts() {
+            const list = document.getElementById('product-list');
+            list.innerHTML = '';
+            Object.entries(allProducts).forEach(([key, p]) => {
+                list.innerHTML += `<div class="border rounded-lg p-3"><img src="${p.image}" class="w-full h-32 object-cover rounded mb-2"><p class="font-bold">${p.name}</p><p class="text-sm">₹${p.price} | Views: ${p.views || 0} | ⭐${p.rating || 0}</p><p class="text-xs text-gray-600">Sizes: ${p.sizes.join(', ')}</p>${p.featured? '<span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">Featured</span>' : ''}<button onclick="deleteProduct('${key}')" class="mt-2 text-red-600 text-xs block">Delete</button></div>`;
             });
         }
-
-        window.deleteProduct = (key) => {
-            if(confirm('Delete this product?')) {
-                remove(ref(db, 'products/' + key));
-            }
-        };
-
-        function loadOrders() {
-            onValue(ref(db, 'orders'), (snapshot) => {
-                const list = document.getElementById('order-list');
-                list.innerHTML = '';
-                snapshot.forEach(child => {
-                    const o = child.val();
-                    const key = child.key;
-                    const items = o.items.map(i => `${i.name} x${i.qty}`).join(', ');
-                    list.innerHTML += `
-                        <div class="border rounded-lg p-4">
-                            <div class="flex justify-between items-start mb-2">
-                                <div>
-                                    <p class="font-bold">${o.name}</p>
-                                    <p class="text-sm text-gray-600">${o.email} | ${o.phone}</p>
-                                    <p class="text-sm text-gray-600">${o.address}, ${o.city} - ${o.pincode}</p>
-                                </div>
-                                <div class="text-right">
-                                    <p class="font-bold text-lg">₹${o.total}</p>
-                                    <select onchange="updateStatus('${key}', this.value)" class="text-sm border rounded p-1 mt-1">
-                                        <option ${o.status==='Pending'?'selected':''}>Pending</option>
-                                        <option ${o.status==='Confirmed'?'selected':''}>Confirmed</option>
-                                        <option ${o.status==='Shipped'?'selected':''}>Shipped</option>
-                                        <option ${o.status==='Delivered'?'selected':''}>Delivered</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <p class="text-sm"><b>Items:</b> ${items}</p>
-                            <p class="text-xs text-gray-500 mt-2">UPI: ${o.upi} | ${new Date(o.timestamp).toLocaleString()}</p>
-                        </div>`;
-                });
+        window.deleteProduct = (key) => { if(confirm('Delete product?')) remove(ref(db, 'products/' + key)); };
+        function renderOrders() {
+            const list = document.getElementById('order-list');
+            const statusFilter = document.getElementById('filter-status').value;
+            const paymentFilter = document.getElementById('filter-payment').value;
+            const dateFilter = document.getElementById('filter-date').value;
+            const search = document.getElementById('search-order').value.toLowerCase();
+            list.innerHTML = '';
+            Object.entries(allOrders).reverse().forEach(([key, o]) => {
+                if (statusFilter && o.status!== statusFilter) return;
+                if (paymentFilter && o.paymentMethod!== paymentFilter) return;
+                if (dateFilter && new Date(o.timestamp).toISOString().split('T')[0]!== dateFilter) return;
+                if (search &&!o.name.toLowerCase().includes(search) &&!o.phone.includes(search)) return;
+                const items = o.items.map(i => `${i.name} (${i.size}) x${i.qty}`).join(', ');
+                const statusClass = `status-${o.status.toLowerCase()}`;
+                list.innerHTML += `<div class="border rounded-lg p-4"><div class="flex justify-between items-start mb-2"><div class="flex-1"><p class="font-bold">${o.name} - ${o.phone}</p><p class="text-sm text-gray-600">${o.address}, ${o.city} - ${o.pincode}</p><p class="text-sm mt-1"><b>Items:</b> ${items}</p><p class="text-xs text-gray-500 mt-1">Payment: ${o.paymentMethod} | ${new Date(o.timestamp).toLocaleString()}</p><div class="flex gap-2 mt-2 flex-wrap"><span class="px-2 py-1 rounded text-xs ${statusClass}">${o.status}</span>${o.codVerified? '<span class="px-2 py-1 rounded text-xs bg-green-100 text-green-800">COD Verified</span>' : ''}</div></div><div class="text-right"><p class="font-bold text-lg">₹${o.total}</p><select onchange="updateStatus('${key}', this.value)" class="text-sm border rounded p-1 mt-1"><option ${o.status==='Pending'?'selected':''}>Pending</option><option ${o.status==='Confirmed'?'selected':''}>Confirmed</option><option ${o.status==='Shipped'?'selected':''}>Shipped</option><option ${o.status==='Delivered'?'selected':''}>Delivered</option><option ${o.status==='Cancelled'?'selected':''}>Cancelled</option><option ${o.status==='Refunded'?'selected':''}>Refunded</option></select><button onclick='printInvoice(${JSON.stringify(o).replace(/'/g, "&apos;")})' class="block w-full bg-blue-500 text-white px-2 py-1 rounded text-xs mt-1">Print Invoice</button><button onclick='printLabel(${JSON.stringify(o).replace(/'/g, "&apos;")})' class="block w-full bg-green-500 text-white px-2 py-1 rounded text-xs mt-1">Shipping Label</button>${o.paymentMethod==='COD' &&!o.codVerified && o.status==='Pending'? `<button onclick="verifyCOD('${key}')" class="block w-full bg-yellow-500 text-white px-2 py-1 rounded text-xs mt-1">Verify COD</button>` : ''}${o.status==='Pending'? `<button onclick="cancelOrder('${key}')" class="block w-full bg-red-500 text-white px-2 py-1 rounded text-xs mt-1">Cancel</button>` : ''}${o.status==='Delivered' && o.status!=='Refunded'? `<button onclick="refundOrder('${key}')" class="block w-full bg-pink-500 text-white px-2 py-1 rounded text-xs mt-1">Refund</button>` : ''}</div></div><div class="text-xs text-gray-500 mt-2 border-t pt-2"><b>Timeline:</b> ${getTimeline(o)}</div></div>`;
             });
         }
-
+        document.getElementById('filter-status').onchange = renderOrders;
+        document.getElementById('filter-payment').onchange = renderOrders;
+        document.getElementById('filter-date').onchange = renderOrders;
+        document.getElementById('search-order').oninput = renderOrders;
         window.updateStatus = (key, status) => {
-            update(ref(db, 'orders/' + key), { status: status });
+            const updates = { status: status };
+            if(status === 'Confirmed') updates.confirmedAt = Date.now();
+            if(status === 'Shipped') updates.shippedAt = Date.now();
+            if(status === 'Delivered') updates.deliveredAt = Date.now();
+            update(ref(db, 'orders/' + key), updates);
         };
+        window.verifyCOD = (key) => { update(ref(db, 'orders/' + key), { codVerified: true }); };
+        window.cancelOrder = (key) => { if(confirm('Cancel this order?')) update(ref(db, 'orders/' + key), { status: 'Cancelled' }); };
+        window.refundOrder = (key) => { if(confirm('Refund this order?')) update(ref(db, 'orders/' + key), { status: 'Refunded' }); };
+        function getTimeline(o) {
+            let t = `Placed: ${new Date(o.timestamp).toLocaleDateString()}`;
+            if(o.confirmedAt) t += ` → Confirmed: ${new Date(o.confirmedAt).toLocaleDateString()}`;
+            if(o.shippedAt) t += ` → Shipped: ${new Date(o.shippedAt).toLocaleDateString()}`;
+            if(o.deliveredAt) t += ` → Delivered: ${new Date(o.deliveredAt).toLocaleDateString()}`;
+            return t;
+        }
+        window.printInvoice = (o) => {
+            const doc = new jsPDF();
+            doc.setFontSize(20);
+            doc.text('Fashion Fuel - Invoice', 105, 15, null, null, 'center');
+            doc.setFontSize(12);
+            doc.text(`Order Date: ${new Date(o.timestamp).toLocaleDateString()}`, 14, 30);
+            doc.text(`Customer: ${o.name}`, 14, 38);
+            doc.text(`Phone: ${o.phone}`, 14, 46);
+            doc.text(`Address: ${o.address}, ${o.city} - ${o.pincode}`, 14, 54);
+            doc.text(`Payment: ${o.paymentMethod}`, 14, 62);
+            let y = 75;
+            doc.text('Items:', 14, y);
+            y += 8;
+            o.items.forEach(i => { doc.text(`${i.name} (${i.size}) x ${i.qty} - ₹${i.price * i.qty}`, 14, y); y += 8; });
+            y += 5;
+            doc.setFontSize(14);
+            doc.text(`Total: ₹${o.total}`, 14, y);
+            doc.save(`invoice-${o.phone}.pdf`);
+        };
+        window.printLabel = (o) => {
+            const doc = new jsPDF();
+            doc.setFontSize(16);
+            doc.text('SHIPPING LABEL', 105, 15, null, null, 'center');
+            doc.setFontSize(12);
+            doc.text(`To: ${o.name}`, 14, 30);
+            doc.text(`${o.address}`, 14, 38);
+            doc.text(`${o.city} - ${o.pincode}`, 14, 46);
+            doc.text(`Phone: ${o.phone}`, 14, 54);
+            doc.text(`Payment: ${o.paymentMethod} - ₹${o.total}`, 14, 62);
+            doc.text(`From: Fashion Fuel`, 14, 75);
+            doc.save(`label-${o.phone}.pdf`);
+        };
+        function renderSalesChart() {
+            const ctx = document.getElementById('sales-chart');
+            const last7Days = {};
+            for(let i=6; i>=0; i--) {
+                const d = new Date();
+                d.setDate(d.getDate() - i);
+                last7Days[d.toLocaleDateString()] = 0;
+            }
+            Object.values(allOrders).forEach(o => {
+                const d = new Date(o.timestamp).toLocaleDateString();
+                if(last7Days[d]!== undefined && o.status!=='Cancelled' && o.status!=='Refunded') last7Days[d] += o.total;
+            });
+            if(salesChart) salesChart.destroy();
+            salesChart = new Chart(ctx, {type: 'line',data: { labels: Object.keys(last7Days), datasets: [{ label: 'Sales', data: Object.values(last7Days), borderColor: 'rgb(75, 192, 192)', tension: 0.1 }] }});
+        }
+        function renderTopProducts() {
+            const sales = {};
+            Object.values(allOrders).forEach(o => {
+                if(o.status==='Cancelled' || o.status==='Refunded') return;
+                o.items.forEach(i => { sales[i.name] = (sales[i.name] || 0) + i.qty; });
+            });
+            const top = Object.entries(sales).sort((a,b) => b[1]-a[1]).slice(0,5);
+            document.getElementById('top-products').innerHTML = top.map(([name, qty]) => `<div class="flex justify-between text-sm"><span>${name}</span><span class="font-bold">${qty} sold</span></div>`).join('') || '<p class="text-sm text-gray-500">No sales yet</p>';
+        }
+        function renderUsers() {
+            const list = document.getElementById('user-list');
+            list.innerHTML = '';
+            Object.entries(allUsers).forEach(([phone, u]) => {
+                const userOrders = Object.values(allOrders).filter(o => o.phone === phone);
+                const totalSpent = userOrders.reduce((sum, o) => o.status!=='Cancelled' && o.status!=='Refunded'? sum + o.total : sum, 0);
+                list.innerHTML += `<div class="border rounded-lg p-3 flex justify-between items-center"><div><p class="font-bold">${u.name} - ${phone}</p><p class="text-sm text-gray-600">Orders: ${userOrders.length} | Spent: ₹${totalSpent} | Last: ${new Date(u.lastOrder).toLocaleDateString()}</p></div><div>${u.blocked? '<span class="text-red-600 text-xs">Blocked</span>' : `<button onclick="blockUser('${phone}')" class="bg-red-500 text-white px-3 py-1 rounded text-xs">Block</button>`}</div></div>`;
+            });
+        }
+        window.blockUser = (phone) => { if(confirm('Block this user?')) update(ref(db, 'users/' + phone), { blocked: true }); };
+        function renderMessages() {
+            const list = document.getElementById('message-list');
+            list.innerHTML = '';
+            Object.entries(allMessages).reverse().forEach(([key, m]) => {
+                list.innerHTML += `<div class="border rounded-lg p-3"><p class="font-bold">${m.name} - ${m.email}</p><p class="text-sm mt-1">${m.message}</p><p class="text-xs text-gray-500 mt-2">${new Date(m.timestamp).toLocaleString()}</p>${m.reply? `<div class="bg-blue-50 p-2 rounded mt-2 text-sm"><b>Reply:</b> ${m.reply}</div>` : ''}${!m.replied? `<button onclick="replyMessage('${key}')" class="bg-blue-500 text-white px-3 py-1 rounded text-xs mt-2">Reply</button>` : '<span class="text-green-600 text-xs mt-2 block">Replied</span>'}</div>`;
+            });
+        }
+        window.replyMessage = (key) => {
+            const reply = prompt('Your reply:');
+            if(reply) update(ref(db, 'messages/' + key), { replied: true, reply: reply, repliedAt: Date.now() });
+        };
+        function renderComplaints() {
+            const list = document.getElementById('complaint-list');
+            list.innerHTML = '';
+            Object.entries(allComplaints).reverse().forEach(([key, c]) => {
+                list.innerHTML += `<div class="border rounded-lg p-3"><div class="flex justify-between items-start"><div><p class="font-bold">${c.name} - ${c.phone}</p><p class="text-sm mt-1"><b>Issue:</b> ${c.issue}</p><p class="text-xs text-gray-500 mt-2">${new Date(c.timestamp).toLocaleString()}</p></div><span class="px-2 py-1 rounded text-xs ${c.resolved? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">${c.resolved? 'Resolved' : 'Open'}</span></div>${!c.resolved? `<button onclick="resolveComplaint('${key}')" class="bg-green-500 text-white px-3 py-1 rounded text-xs mt-2">Mark Resolved</button>` : ''}</div>`;
+            });
+        }
+        window.resolveComplaint = (key) => { update(ref(db, 'complaints/' + key), { resolved: true, resolvedAt: Date.now() }); };
+        function renderReviews() {
+            const list = document.getElementById('review-list');
+            list.innerHTML = '';
+            Object.entries(allReviews).reverse().forEach(([key, r]) => {
+                list.innerHTML += `<div class="border rounded-lg p-3"><p class="font-bold">${r.productName}</p><p class="text-sm">By: ${r.userName} - ${'⭐'.repeat(r.rating)}</p><p class="text-sm mt-1">${r.comment}</p><p class="text-xs text-gray-500 mt-2">${new Date(r.timestamp).toLocaleString()}</p></div>`;
+            });
+        }
     </script>
 </body>
 </html>
