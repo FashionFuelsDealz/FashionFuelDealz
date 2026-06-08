@@ -3,343 +3,335 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fashion Fuel - Trendy Fashion Store</title>
+    <title>Fashion Fuel - Style That Speaks</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body{font-family:Poppins,sans-serif;scroll-behavior:smooth}
-   .product-card{transition:transform 0.2s}
-   .product-card:hover{transform:translateY(-5px)}
-   .size-btn.selected{background:#f97316;color:white;border-color:#f97316}
-   .modal{display:none}
-   .modal.active{display:flex}
+        html { scroll-behavior: smooth; }
+       .modal { display: none; }
+       .modal.active { display: flex; }
     </style>
 </head>
-<body class="bg-white">
-    <header class="bg-white shadow-md sticky top-0 z-40 border-b-2 border-orange-500">
-        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-            <img src="https://i.ibb.co/Z6KWsXtc/IMG-20260608-121833.jpg" alt="Fashion Fuel" class="h-10 md:h-12">
-            <div class="hidden md:flex items-center gap-6">
-                <a href="#home" class="text-sm font-medium hover:text-orange-600">Home</a>
-                <a href="#shop" class="text-sm font-medium hover:text-orange-600">Shop</a>
-                <a href="#about" class="text-sm font-medium hover:text-orange-600">About</a>
-                <a href="#contact" class="text-sm font-medium hover:text-orange-600">Contact</a>
-            </div>
-            <div class="flex items-center gap-4">
+<body class="bg-gray-50">
+    <!-- Navbar -->
+    <nav class="bg-white shadow-md sticky top-0 z-40">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-orange-600">Fashion Fuel</h1>
+            <div class="flex items-center gap-6">
+                <a href="#home" class="hover:text-orange-600">Home</a>
+                <a href="#products" class="hover:text-orange-600">Shop</a>
+                <a href="#contact" class="hover:text-orange-600">Contact</a>
                 <button onclick="openCart()" class="relative">
-                    🛒
-                    <span id="cart-count" class="absolute -top-2 -right-2 bg-orange-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">0</span>
+                    <i class="fas fa-shopping-cart text-xl"></i>
+                    <span id="cartCount" class="absolute -top-2 -right-2 bg-orange-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">0</span>
                 </button>
             </div>
         </div>
-    </header>
+    </nav>
 
     <!-- Hero Section -->
-    <section id="home" class="bg-gradient-to-r from-orange-50 to-orange-100 py-16">
-        <div class="max-w-7xl mx-auto px-4 text-center">
-            <h1 class="text-4xl md:text-5xl font-bold text-orange-600 mb-4">Fashion Fuel</h1>
-            <p class="text-lg text-gray-700 mb-6">Trendy Fashion at Unbeatable Prices</p>
-            <a href="#shop" class="inline-block bg-orange-500 text-white px-8 py-3 rounded-lg font-semibold hover:bg-orange-600">Shop Now</a>
+    <section id="home" class="bg-gradient-to-r from-orange-500 to-pink-500 text-white py-20">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-5xl font-bold mb-4">Style That Speaks</h2>
+            <p class="text-xl mb-6">Discover the latest trends in fashion</p>
+            <a href="#products" class="bg-white text-orange-600 px-8 py-3 rounded-full font-bold hover:bg-gray-100">Shop Now</a>
         </div>
     </section>
 
-    <!-- Shop Section -->
-    <main id="shop" class="max-w-7xl mx-auto px-4 py-12">
-        <h2 class="text-3xl font-bold text-center mb-8 text-orange-600">Our Collection</h2>
-        <div class="mb-6 flex gap-2 overflow-x-auto pb-2">
-            <button onclick="filterCategory('All')" class="cat-btn px-4 py-2 bg-orange-500 text-white rounded-lg whitespace-nowrap">All</button>
-            <button onclick="filterCategory('Shirts')" class="cat-btn px-4 py-2 bg-gray-100 rounded-lg whitespace-nowrap hover:bg-orange-100">Shirts</button>
-            <button onclick="filterCategory('T-Shirts')" class="cat-btn px-4 py-2 bg-gray-100 rounded-lg whitespace-nowrap hover:bg-orange-100">T-Shirts</button>
-            <button onclick="filterCategory('Jeans')" class="cat-btn px-4 py-2 bg-gray-100 rounded-lg whitespace-nowrap hover:bg-orange-100">Jeans</button>
-            <button onclick="filterCategory('Shoes')" class="cat-btn px-4 py-2 bg-gray-100 rounded-lg whitespace-nowrap hover:bg-orange-100">Shoes</button>
-            <button onclick="filterCategory('Watches')" class="cat-btn px-4 py-2 bg-gray-100 rounded-lg whitespace-nowrap hover:bg-orange-100">Watches</button>
-            <button onclick="filterCategory('Accessories')" class="cat-btn px-4 py-2 bg-gray-100 rounded-lg whitespace-nowrap hover:bg-orange-100">Accessories</button>
-        </div>
-        <div id="product-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
-    </main>
-
-    <!-- Why Choose Us Section -->
-    <section class="bg-orange-50 py-12">
-        <div class="max-w-7xl mx-auto px-4">
-            <h2 class="text-3xl font-bold text-center mb-10 text-orange-600">Why Choose Us?</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="text-center bg-white p-6 rounded-lg shadow-md border border-orange-100">
-                    <div class="text-4xl mb-3">🚚</div>
-                    <h3 class="font-bold text-lg mb-2">Fast Delivery</h3>
-                    <p class="text-gray-600 text-sm">Quick & safe delivery at your doorstep</p>
-                </div>
-                <div class="text-center bg-white p-6 rounded-lg shadow-md border border-orange-100">
-                    <div class="text-4xl mb-3">💯</div>
-                    <h3 class="font-bold text-lg mb-2">Best Quality</h3>
-                    <p class="text-gray-600 text-sm">Premium quality products guaranteed</p>
-                </div>
-                <div class="text-center bg-white p-6 rounded-lg shadow-md border border-orange-100">
-                    <div class="text-4xl mb-3">💰</div>
-                    <h3 class="font-bold text-lg mb-2">Affordable Price</h3>
-                    <p class="text-gray-600 text-sm">Trendy fashion at lowest prices</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- About The Owner Section -->
-    <section id="about" class="py-12">
-        <div class="max-w-4xl mx-auto px-4 text-center">
-            <h2 class="text-3xl font-bold mb-6 text-orange-600">About The Owner</h2>
-            <div class="bg-white p-8 rounded-lg shadow-md border border-orange-100">
-                <img src="https://i.ibb.co/Z6KWsXtc/IMG-20260608-121833.jpg" class="w-24 h-24 rounded-full mx-auto mb-4 border-4 border-orange-500">
-                <h3 class="text-xl font-bold mb-2">Yashu Kumar</h3>
-                <p class="text-gray-600 mb-4">Founder & CEO, Fashion Fuel</p>
-                <p class="text-gray-700">At just 13, Yashu Kumar founded Fashion Fuel with a big money-making dream. Passionate about style and entrepreneurship, he believes age doesn't limit success. His mission: make trendy fashion affordable for everyone.</p>
-                <p class="mt-4 font-semibold text-orange-600">Full Support - Yashu Kumar ❤️</p>
-            </div>
+    <!-- Products Section -->
+    <section id="products" class="py-16">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-10">Our Products</h2>
+            <div id="productGrid" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
         </div>
     </section>
 
     <!-- Contact Section -->
-    <section id="contact" class="bg-orange-50 py-12">
-        <div class="max-w-2xl mx-auto px-4">
-            <h2 class="text-2xl font-bold text-center mb-6 text-orange-600">Contact Us</h2>
-            <form id="contact-form" class="space-y-4">
-                <input type="text" id="c-name" placeholder="Your Name" class="w-full p-3 border-2 border-orange-200 rounded-lg focus:border-orange-500" required>
-                <input type="email" id="c-email" placeholder="Your Email" class="w-full p-3 border-2 border-orange-200 rounded-lg focus:border-orange-500" required>
-                <textarea id="c-message" placeholder="Your Message" class="w-full p-3 border-2 border-orange-200 rounded-lg focus:border-orange-500" rows="4" required></textarea>
-                <button type="submit" class="w-full bg-orange-500 text-white py-3 rounded-lg font-semibold hover:bg-orange-600">Send Message</button>
-            </form>
-            <div class="text-center mt-6">
-                <a href="https://wa.me/919113358739" target="_blank" class="inline-block bg-green-500 text-white px-6 py-3 rounded-lg font-semibold">💬 Chat on WhatsApp</a>
+    <section id="contact" class="py-16 bg-white">
+        <div class="container mx-auto px-4 max-w-2xl">
+            <h2 class="text-3xl font-bold text-center mb-10">Contact Us</h2>
+            <div class="bg-gray-50 p-6 rounded-lg shadow">
+                <input id="cName" placeholder="Your Name" class="w-full border p-3 mb-3 rounded">
+                <input id="cEmail" placeholder="Your Email" type="email" class="w-full border p-3 mb-3 rounded">
+                <textarea id="cMessage" placeholder="Your Message" rows="4" class="w-full border p-3 mb-3 rounded"></textarea>
+                <button onclick="sendMessage()" class="w-full bg-orange-500 text-white py-3 rounded font-bold hover:bg-orange-600">Send Message</button>
             </div>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer class="bg-gray-800 text-white py-6 text-center">
-        <p class="mb-2">© 2026 Fashion Fuel. All Rights Reserved.</p>
-        <p class="text-orange-400 font-semibold">Full Support - Yashu Kumar ❤️</p>
+    <footer class="bg-gray-800 text-white py-8 text-center">
+        <p>&copy; 2026 Fashion Fuel. All rights reserved.</p>
     </footer>
 
-    <!-- Product Modal -->
-    <div id="product-modal" class="modal fixed inset-0 bg-black bg-opacity-50 z-50 items-center justify-center p-4">
-        <div class="bg-white rounded-xl max-w-2xl w-full max-h-screen overflow-y-auto border-t-4 border-orange-500">
+    <!-- Product Detail Modal -->
+    <div id="productModal" class="modal fixed inset-0 bg-black bg-opacity-50 z-50 items-center justify-center p-4">
+        <div class="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
             <div class="p-6">
                 <div class="flex justify-between items-start mb-4">
-                    <h3 id="modal-name" class="text-2xl font-bold text-orange-600"></h3>
-                    <button onclick="closeModal()" class="text-2xl">×</button>
+                    <h3 id="modalName" class="text-2xl font-bold"></h3>
+                    <button onclick="closeProductModal()" class="text-2xl">&times;</button>
                 </div>
-                <img id="modal-img" class="w-full h-64 object-cover rounded-lg mb-4">
-                <p id="modal-desc" class="text-gray-600 mb-4"></p>
-                <p class="text-2xl font-bold mb-4 text-orange-600">₹<span id="modal-price"></span></p>
-                <div class="mb-4">
-                    <p class="font-semibold mb-2">Select Size:</p>
-                    <div id="modal-sizes" class="flex gap-2 flex-wrap"></div>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <img id="modalMainImg" src="" class="w-full h-96 object-cover rounded mb-2">
+                        <div id="modalThumbs" class="flex gap-2"></div>
+                    </div>
+                    <div>
+                        <p id="modalPrice" class="text-3xl font-bold text-orange-600 mb-4"></p>
+                        <p id="modalDesc" class="text-gray-600 mb-4"></p>
+                        <div class="mb-4">
+                            <label class="font-bold">Size:</label>
+                            <select id="modalSize" class="w-full border p-2 rounded mt-1">
+                                <option>S</option><option>M</option><option>L</option><option>XL</option><option>XXL</option>
+                            </select>
+                        </div>
+                        <div class="mb-4">
+                            <label class="font-bold">Colour:</label>
+                            <select id="modalColour" class="w-full border p-2 rounded mt-1">
+                                <option>Black</option><option>White</option><option>Red</option><option>Blue</option><option>Green</option>
+                            </select>
+                        </div>
+                        <button onclick="addToCart()" class="w-full bg-orange-500 text-white py-3 rounded font-bold hover:bg-orange-600">Add to Cart</button>
+                    </div>
                 </div>
-                <button onclick="addToCartFromModal()" class="w-full bg-orange-500 text-white py-3 rounded-lg font-semibold hover:bg-orange-600">Add to Cart</button>
             </div>
         </div>
     </div>
 
     <!-- Cart Modal -->
-    <div id="cart-modal" class="modal fixed inset-0 bg-black bg-opacity-50 z-50 items-center justify-center p-4">
-        <div class="bg-white rounded-xl max-w-2xl w-full max-h-screen overflow-y-auto border-t-4 border-orange-500">
+    <div id="cartModal" class="modal fixed inset-0 bg-black bg-opacity-50 z-50 items-center justify-center p-4">
+        <div class="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div class="p-6">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-2xl font-bold text-orange-600">Your Cart</h3>
-                    <button onclick="closeCart()" class="text-2xl">×</button>
+                    <h3 class="text-2xl font-bold">Your Cart</h3>
+                    <button onclick="closeCart()" class="text-2xl">&times;</button>
                 </div>
-                <div id="cart-items" class="space-y-3 mb-4"></div>
+                <div id="cartItems" class="space-y-4 mb-4"></div>
                 <div class="border-t pt-4">
-                    <div class="flex justify-between text-xl font-bold mb-4">
-                        <span>Total:</span><span class="text-orange-600">₹<span id="cart-total">0</span></span>
-                    </div>
-                    <button onclick="openCheckout()" class="w-full bg-orange-500 text-white py-3 rounded-lg font-semibold hover:bg-orange-600">Proceed to Checkout</button>
+                    <p class="text-xl font-bold mb-4">Total: ₹<span id="cartTotal">0</span></p>
+                    <button onclick="openCheckout()" class="w-full bg-orange-500 text-white py-3 rounded font-bold hover:bg-orange-600">Checkout</button>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Checkout Modal -->
-    <div id="checkout-modal" class="modal fixed inset-0 bg-black bg-opacity-50 z-50 items-center justify-center p-4">
-        <div class="bg-white rounded-xl max-w-2xl w-full max-h-screen overflow-y-auto border-t-4 border-orange-500">
+    <div id="checkoutModal" class="modal fixed inset-0 bg-black bg-opacity-50 z-50 items-center justify-center p-4">
+        <div class="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div class="p-6">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-2xl font-bold text-orange-600">Checkout</h3>
-                    <button onclick="closeCheckout()" class="text-2xl">×</button>
+                    <h3 class="text-2xl font-bold">Checkout</h3>
+                    <button onclick="closeCheckout()" class="text-2xl">&times;</button>
                 </div>
-                <form id="checkout-form" class="space-y-4">
-                    <input type="text" id="co-name" placeholder="Full Name" class="w-full p-3 border-2 border-orange-200 rounded-lg focus:border-orange-500" required>
-                    <input type="tel" id="co-phone" placeholder="Phone Number" class="w-full p-3 border-2 border-orange-200 rounded-lg focus:border-orange-500" required>
-                    <textarea id="co-address" placeholder="Full Address" class="w-full p-3 border-2 border-orange-200 rounded-lg focus:border-orange-500" rows="2" required></textarea>
-                    <div class="grid grid-cols-2 gap-4">
-                        <input type="text" id="co-city" placeholder="City" class="p-3 border-2 border-orange-200 rounded-lg focus:border-orange-500" required>
-                        <input type="text" id="co-pincode" placeholder="Pincode" class="p-3 border-2 border-orange-200 rounded-lg focus:border-orange-500" required>
-                    </div>
-                    <div class="border-2 border-orange-200 rounded-lg p-4">
-                        <p class="font-semibold mb-3">Payment Method:</p>
-                        <label class="flex items-center gap-2 mb-2"><input type="radio" name="payment" value="COD" checked onchange="toggleUPI()" class="accent-orange-500"> <span>Cash on Delivery</span></label>
-                        <label class="flex items-center gap-2"><input type="radio" name="payment" value="UPI" onchange="toggleUPI()" class="accent-orange-500"> <span>UPI Payment</span></label>
-                        <div id="upi-section" class="hidden mt-4 text-center">
-                            <p class="text-sm mb-2">Scan QR or Pay to UPI ID:</p>
-                            <p class="font-bold text-lg mb-2 text-orange-600">9113358739@fam</p>
-                            <div id="qrcode" class="flex justify-center mb-2"></div>
-                            <p class="text-xs text-gray-600">Amount: ₹<span id="upi-amount"></span></p>
-                            <p class="text-xs text-red-600 mt-2">⚠️ After payment, click Place Order</p>
-                        </div>
-                    <button type="submit" class="w-full bg-orange-500 text-white py-3 rounded-lg font-semibold hover:bg-orange-600">Place Order</button>
-                </form>
+                <input id="oName" placeholder="Full Name" class="w-full border p-3 mb-3 rounded">
+                <input id="oPhone" placeholder="Mobile Number" type="tel" class="w-full border p-3 mb-3 rounded">
+                <input id="oEmail" placeholder="Email" type="email" class="w-full border p-3 mb-3 rounded">
+                <textarea id="oAddress" placeholder="Full Address" class="w-full border p-3 mb-3 rounded"></textarea>
+                <input id="oLandmark" placeholder="Landmark" class="w-full border p-3 mb-3 rounded">
+                <input id="oPincode" placeholder="Pincode" type="number" class="w-full border p-3 mb-3 rounded">
+                <select id="oPayment" class="w-full border p-3 mb-4 rounded">
+                    <option value="">Select Payment Method</option>
+                    <option value="COD">Cash on Delivery</option>
+                    <option value="UPI">UPI</option>
+                    <option value="Card">Credit/Debit Card</option>
+                </select>
+                <button onclick="placeOrder()" class="w-full bg-orange-500 text-white py-3 rounded font-bold hover:bg-orange-600">Place Order</button>
             </div>
         </div>
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getDatabase, ref, push, set, onValue, update, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+<script>
+// Data
+let products = JSON.parse(localStorage.getItem('products')) || [];
+let cart = JSON.parse(localStorage.getItem('cart')) || [];
+let orders = JSON.parse(localStorage.getItem('orders')) || [];
+let messages = JSON.parse(localStorage.getItem('messages')) || [];
+let currentProduct = null;
 
-        const FIREBASE_CONFIG = {apiKey:"AIzaSyDnN6Vqh6yNdWM6NVg_JFbMTrj37jheK9I",authDomain:"fashionfuel-7e841.firebaseapp.com",databaseURL:"https://fashionfuel-7e841-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"fashionfuel-7e841",storageBucket:"fashionfuel-7e841.firebasestorage.app",messagingSenderId:"457153779306",appId:"1:457153779306:web:7f8c6f6129da5f9e8bdc13",measurementId:"G-WL5KVK1KJX"};
-        const UPI_ID = "9113358739@fam";
-        const WHATSAPP = "9113358739";
+// Load Products
+function loadProducts() {
+    const grid = document.getElementById('productGrid');
+    if(products.length === 0) {
+        grid.innerHTML = '<p class="col-span-4 text-center text-gray-500 py-10">No products available yet. Check back soon!</p>';
+        return;
+    }
+    let html = '';
+    products.forEach(p => {
+        html += `<div class="bg-white rounded-lg shadow hover:shadow-xl transition cursor-pointer" onclick="openProduct(${p.id})">
+            <img src="${p.image}" class="h-64 w-full object-cover rounded-t-lg">
+            <div class="p-4">
+                <h3 class="font-bold mb-2">${p.name}</h3>
+                <p class="text-orange-600 font-bold text-xl">₹${p.price}</p>
+            </div>
+        </div>`;
+    });
+    grid.innerHTML = html;
+}
 
-        const app = initializeApp(FIREBASE_CONFIG);
-        const db = getDatabase(app);
+// Product Modal
+function openProduct(id) {
+    currentProduct = products.find(p => p.id === id);
+    document.getElementById('modalName').innerText = currentProduct.name;
+    document.getElementById('modalPrice').innerText = '₹' + currentProduct.price;
+    document.getElementById('modalDesc').innerText = currentProduct.description;
+    document.getElementById('modalMainImg').src = currentProduct.image;
 
-        let allProducts = {}, cart = [], currentProduct = null, currentCategory = 'All';
+    let thumbs = '';
+    currentProduct.images.forEach(img => {
+        thumbs += `<img src="${img}" onclick="document.getElementById('modalMainImg').src='${img}'" class="w-20 h-20 object-cover rounded cursor-pointer border-2 hover:border-orange-500">`;
+    });
+    document.getElementById('modalThumbs').innerHTML = thumbs;
+    document.getElementById('productModal').classList.add('active');
+}
 
-        const visitorId = localStorage.getItem('visitorId') || Date.now();
-        localStorage.setItem('visitorId', visitorId);
-        set(ref(db, 'visitors/' + visitorId), { timestamp: Date.now() });
+function closeProductModal() {
+    document.getElementById('productModal').classList.remove('active');
+}
 
-        onValue(ref(db, 'products'), s => { allProducts = s.val() || {}; renderProducts(); });
+// Cart Functions
+function addToCart() {
+    const item = {
+        id: currentProduct.id,
+        name: currentProduct.name,
+        price: currentProduct.price,
+        image: currentProduct.image,
+        size: document.getElementById('modalSize').value,
+        colour: document.getElementById('modalColour').value,
+        qty: 1
+    };
 
-        function renderProducts() {
-            const grid = document.getElementById('product-grid');
-            grid.innerHTML = '';
-            Object.entries(allProducts).forEach(([key, p]) => {
-                if (currentCategory!== 'All' && p.category!== currentCategory) return;
-                const card = document.createElement('div');
-                card.className = 'product-card bg-white rounded-lg shadow-md overflow-hidden cursor-pointer border border-orange-100';
-                card.onclick = () => openProductModal(key, p);
-                card.innerHTML = `<img src="${p.image}" class="w-full h-48 object-cover"><div class="p-3"><p class="font-semibold text-sm truncate">${p.name}</p><p class="text-lg font-bold text-orange-600">₹${p.price}</p>${p.featured? '<span class="text-xs bg-orange-100 text-orange-800 px-2 py-1 rounded">Featured</span>' : ''}<p class="text-xs text-gray-500 mt-1">⭐ ${p.rating || 0} | 👁️ ${p.views || 0}</p></div>`;
-                grid.appendChild(card);
-            });
-        }
+    const existing = cart.find(c => c.id === item.id && c.size === item.size && c.colour === item.colour);
+    if(existing) {
+        existing.qty++;
+    } else {
+        cart.push(item);
+    }
 
-        window.filterCategory = (cat) => {
-            currentCategory = cat;
-            document.querySelectorAll('.cat-btn').forEach(b => { b.classList.remove('bg-orange-500', 'text-white'); b.classList.add('bg-gray-100'); });
-            event.target.classList.remove('bg-gray-100');
-            event.target.classList.add('bg-orange-500', 'text-white');
-            renderProducts();
-        };
+    localStorage.setItem('cart', JSON.stringify(cart));
+    updateCartCount();
+    closeProductModal();
+    alert('Added to cart!');
+}
 
-        window.openProductModal = (key, p) => {
-            currentProduct = {key,...p};
-            document.getElementById('modal-name').textContent = p.name;
-            document.getElementById('modal-img').src = p.image;
-            document.getElementById('modal-desc').textContent = p.description;
-            document.getElementById('modal-price').textContent = p.price;
-            const sizesDiv = document.getElementById('modal-sizes');
-            sizesDiv.innerHTML = '';
-            p.sizes.forEach(s => {
-                const btn = document.createElement('button');
-                btn.className = 'size-btn border px-4 py-2 rounded-lg';
-                btn.textContent = s;
-                btn.onclick = () => { document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected')); btn.classList.add('selected'); };
-                sizesDiv.appendChild(btn);
-            });
-            document.getElementById('product-modal').classList.add('active');
-            update(ref(db, 'products/' + key), { views: (p.views || 0) + 1 });
-        };
+function updateCartCount() {
+    document.getElementById('cartCount').innerText = cart.reduce((sum, item) => sum + item.qty, 0);
+}
 
-        window.closeModal = () => document.getElementById('product-modal').classList.remove('active');
+function openCart() {
+    loadCart();
+    document.getElementById('cartModal').classList.add('active');
+}
 
-        window.addToCartFromModal = () => {
-            const size = document.querySelector('.size-btn.selected');
-            if (!size) { alert('Please select a size'); return; }
-            const existing = cart.find(i => i.key === currentProduct.key && i.size === size.textContent);
-            if (existing) { existing.qty++; } else { cart.push({...currentProduct, size: size.textContent, qty: 1}); }
-            updateCartCount();
-            closeModal();
-            alert('Added to cart!');
-        };
+function closeCart() {
+    document.getElementById('cartModal').classList.remove('active');
+}
 
-        window.openCart = () => {
-            renderCart();
-            document.getElementById('cart-modal').classList.add('active');
-        };
+function loadCart() {
+    const cartItems = document.getElementById('cartItems');
+    if(cart.length === 0) {
+        cartItems.innerHTML = '<p class="text-center text-gray-500 py-8">Your cart is empty</p>';
+        document.getElementById('cartTotal').innerText = '0';
+        return;
+    }
 
-        window.closeCart = () => document.getElementById('cart-modal').classList.remove('active');
+    let html = '';
+    let total = 0;
+    cart.forEach((item, index) => {
+        const itemTotal = item.price * item.qty;
+        total += itemTotal;
+        html += `<div class="flex gap-4 border-b pb-4">
+            <img src="${item.image}" class="w-20 h-20 object-cover rounded">
+            <div class="flex-1">
+                <h4 class="font-bold">${item.name}</h4>
+                <p class="text-sm text-gray-600">Size: ${item.size} | Colour: ${item.colour}</p>
+                <p class="text-orange-600 font-bold">₹${item.price} x ${item.qty} = ₹${itemTotal}</p>
+            </div>
+            <button onclick="removeFromCart(${index})" class="text-red-500"><i class="fas fa-trash"></i></button>
+        </div>`;
+    });
+    cartItems.innerHTML = html;
+    document.getElementById('cartTotal').innerText = total;
+}
 
-        function renderCart() {
-            const itemsDiv = document.getElementById('cart-items');
-            itemsDiv.innerHTML = '';
-            let total = 0;
-            cart.forEach((item, idx) => {
-                total += item.price * item.qty;
-                itemsDiv.innerHTML += `<div class="flex gap-3 border-2 border-orange-100 rounded-lg p-2"><img src="${item.image}" class="w-16 h-16 object-cover rounded"><div class="flex-1"><p class="font-semibold text-sm">${item.name}</p><p class="text-xs text-gray-600">Size: ${item.size} | ₹${item.price}</p><div class="flex items-center gap-2 mt-1"><button onclick="updateQty(${idx}, -1)" class="bg-orange-100 px-2 rounded hover:bg-orange-200">-</button><span class="text-sm">${item.qty}</span><button onclick="updateQty(${idx}, 1)" class="bg-orange-100 px-2 rounded hover:bg-orange-200">+</button><button onclick="removeFromCart(${idx})" class="text-red-600 text-xs ml-2">Remove</button></div></div></div>`;
-            });
-            document.getElementById('cart-total').textContent = total;
-            document.getElementById('upi-amount').textContent = total;
-        }
+function removeFromCart(index) {
+    cart.splice(index, 1);
+    localStorage.setItem('cart', JSON.stringify(cart));
+    updateCartCount();
+    loadCart();
+}
 
-        window.updateQty = (idx, change) => { cart[idx].qty += change; if (cart[idx].qty <= 0) cart.splice(idx, 1); updateCartCount(); renderCart(); };
-        window.removeFromCart = (idx) => { cart.splice(idx, 1); updateCartCount(); renderCart(); };
-        function updateCartCount() { document.getElementById('cart-count').textContent = cart.reduce((sum, i) => sum + i.qty, 0); }
+// Checkout
+function openCheckout() {
+    if(cart.length === 0) {
+        alert('Your cart is empty!');
+        return;
+    }
+    closeCart();
+    document.getElementById('checkoutModal').classList.add('active');
+}
 
-        window.openCheckout = () => {
-            if (cart.length === 0) { alert('Cart is empty'); return; }
-            closeCart();
-            document.getElementById('checkout-modal').classList.add('active');
-        };
+function closeCheckout() {
+    document.getElementById('checkoutModal').classList.remove('active');
+}
 
-        window.closeCheckout = () => document.getElementById('checkout-modal').classList.remove('active');
+function placeOrder() {
+    const order = {
+        id: Date.now(),
+        name: document.getElementById('oName').value,
+        phone: document.getElementById('oPhone').value,
+        email: document.getElementById('oEmail').value,
+        address: document.getElementById('oAddress').value,
+        landmark: document.getElementById('oLandmark').value,
+        pincode: document.getElementById('oPincode').value,
+        payment: document.getElementById('oPayment').value,
+        items: cart,
+        total: cart.reduce((sum, item) => sum + (item.price * item.qty), 0),
+        date: new Date().toLocaleString(),
+        size: cart[0].size,
+        colour: cart[0].colour
+    };
 
-        window.toggleUPI = () => {
-            const upiSection = document.getElementById('upi-section');
-            const isUPI = document.querySelector('input[name="payment"]:checked').value === 'UPI';
-            upiSection.classList.toggle('hidden',!isUPI);
-            if (isUPI) {
-                const total = cart.reduce((sum, i) => sum + i.price * i.qty, 0);
-                document.getElementById('qrcode').innerHTML = '';
-                new QRCode(document.getElementById('qrcode'), {
-                    text: `upi://pay?pa=${UPI_ID}&pn=FashionFuel&am=${total}&cu=INR`,
-                    width: 200,
-                    height: 200
-                });
-            }
-        };
+    if(!order.name ||!order.phone ||!order.email ||!order.address ||!order.pincode ||!order.payment) {
+        alert('Please fill all fields');
+        return;
+    }
 
-        document.getElementById('checkout-form').onsubmit = async (e) => {
-            e.preventDefault();
-            const order = {
-                name: document.getElementById('co-name').value,
-                phone: document.getElementById('co-phone').value,
-                address: document.getElementById('co-address').value,
-                city: document.getElementById('co-city').value,
-                pincode: document.getElementById('co-pincode').value,
-                items: cart.map(i => ({name: i.name, price: i.price, size: i.size, qty: i.qty})),
-                total: cart.reduce((sum, i) => sum + i.price * i.qty, 0),
-                paymentMethod: document.querySelector('input[name="payment"]:checked').value,
-                status: 'Pending',
-                codVerified: false,
-                timestamp: Date.now()
-            };
-            await push(ref(db, 'orders'), order);
-            await set(ref(db, 'users/' + order.phone), {name: order.name, phone: order.phone, lastOrder: Date.now(), blocked: false});
-            cart = [];
-            updateCartCount();
-            closeCheckout();
-            alert('Order Placed Successfully! We will contact you soon.');
-            const msg = `Hi, I placed an order. Name: ${order.name}, Phone: ${order.phone}, Total: ₹${order.total}`;
-            window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`, '_blank');
-        };
+    orders.push(order);
+    localStorage.setItem('orders', JSON.stringify(orders));
+    cart = [];
+    localStorage.setItem('cart', JSON.stringify(cart));
+    updateCartCount();
+    closeCheckout();
+    alert('Order Placed Successfully! Thank you for shopping with Fashion Fuel.');
+}
 
-        document.getElementById('contact-form').onsubmit = async (e) => {
-            e.preventDefault();
-            const msg = {name: document.getElementById('c-name').value, email: document.getElementById('c-email').value, message: document.getElementById('c-message').value, timestamp: Date.now(), replied: false};
-            await push(ref(db, 'messages'), msg);
-            e.target.reset();
-            alert('Message sent! We will reply soon.');
-        };
-    </script>
+// Contact Form
+function sendMessage() {
+    const msg = {
+        id: Date.now(),
+        name: document.getElementById('cName').value,
+        email: document.getElementById('cEmail').value,
+        message: document.getElementById('cMessage').value,
+        date: new Date().toLocaleString()
+    };
+
+    if(!msg.name ||!msg.email ||!msg.message) {
+        alert('Please fill all fields');
+        return;
+    }
+
+    messages.push(msg);
+    localStorage.setItem('messages', JSON.stringify(messages));
+    alert('Message sent! We will get back to you soon.');
+    document.getElementById('cName').value = '';
+    document.getElementById('cEmail').value = '';
+    document.getElementById('cMessage').value = '';
+}
+
+// Init
+loadProducts();
+updateCartCount();
+</script>
 </body>
 </html>
